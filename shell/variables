@@ -1,0 +1,10 @@
+packit=~/Documents/git/github/packit/
+copr=~/Documents/git/github/copr
+gh=~/Documents/git/github/
+gl=~/Documents/git/gitlab/
+pg=~/Documents/git/pagure/
+
+# to force crontab use vim as default
+export VISUAL=vim
+
+export EDITOR="vim"

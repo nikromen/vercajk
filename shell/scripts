@@ -1,0 +1,7 @@
+prm() {
+    podman rm -f $(podman ps -qa)
+}
+
+mkcd() {
+    mkdir "${1}" && cd "${1}"
+}

@@ -1,0 +1,33 @@
+alias dns="dnf search"
+alias dni="dnf install"
+alias dnu="dnf update"
+
+alias ..="cd .."
+alias ..2="cd ../../"
+alias ..3="cd ../../../"
+alias ..4="cd ../../../../"
+alias ..5="cd ../../../../../"
+
+alias ga="git add -u"
+alias gb="git branch"
+alias gp="git push -u"
+alias gpo="git push -u origin"
+alias gc="git commit"
+alias gf="git fetch"
+alias gfu="git fetch upstream"
+alias gr="git rebase"
+alias gs="git status"
+alias gsw="git switch"
+alias gswc="git switch -c"
+alias gadog="git adog"
+
+alias df="df -h"
+
+alias pc="podman-compose"
+alias pps="podman ps -a"
+alias pi="podman image"
+alias pils="podman image list -a"
+alias pn="podman network"
+alias pnls="podman network ls"
+
+alias p-c="pre-commit run --all-files"
