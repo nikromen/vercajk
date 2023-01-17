@@ -1,6 +1,7 @@
 alias dns="dnf search"
 alias dni="dnf install"
 alias dnu="dnf update"
+alias dnin="dnf info"
 
 alias ..="cd .."
 alias ..2="cd ../../"
@@ -19,9 +20,9 @@ alias gr="git rebase"
 alias gs="git status"
 alias gsw="git switch"
 alias gswc="git switch -c"
-alias gadog="git adog"
 
 alias df="df -h"
+alias ls="ls -lha"
 
 alias pc="podman-compose"
 alias pps="podman ps -a"

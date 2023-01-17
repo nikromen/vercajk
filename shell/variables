@@ -3,6 +3,7 @@ copr=~/Documents/git/github/copr
 gh=~/Documents/git/github/
 gl=~/Documents/git/gitlab/
 pg=~/Documents/git/pagure/
+dg=~/Documents/git/dist-git/
 
 # to force crontab use vim as default
 export VISUAL=vim
