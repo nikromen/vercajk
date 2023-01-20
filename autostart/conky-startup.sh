@@ -1,2 +1,2 @@
-killall conky
-sleep 10 && conky -d -c "$HOME/.config/conky/default.conkyrc" &
+killall conky >> /dev/null 2>&1
+conky -d -p 10 -c "$HOME/.config/conky/default.conkyrc" >> /dev/null 2>&1
