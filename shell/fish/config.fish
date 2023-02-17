@@ -88,4 +88,3 @@ function fish_prompt
     __loc_fish_concat_prompt "$last_status" "$last_dir"
     echo "$suffix "
 end
-
