@@ -3,7 +3,7 @@ if status is-interactive
 end
 
 
-source ~/.config/shell/aliases
+source ~/.config/bash/aliases
 
 
 # every mym local thingy for fish starts with __loc_fish prefix
