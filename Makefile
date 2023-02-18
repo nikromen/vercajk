@@ -19,7 +19,7 @@ update-bash:
 	\cp -f ./shell/bash/* $$HOME/.config/shell
 
 update-fish:
-	\cp -f ./shell/bash/config.fish $$HOME/.config/fish/config.fish
+	\cp -f ./shell/fish/config.fish $$HOME/.config/fish/config.fish
 
 update-shell: update_bash update_fish
 
