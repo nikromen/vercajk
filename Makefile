@@ -21,11 +21,11 @@ update-bash:
 update-fish:
 	\cp -f ./shell/fish/config.fish $$HOME/.config/fish/config.fish
 
-update-shell: update_bash update_fish
+update-shell: update-bash update-fish
 
 update-vim:
 	\cp -f ./vim/.vimrc $$HOME/; \
 	vim $$HOME/.vimrc -c PlugInstall -c wqa
 
-update: update_autostart update_conky update_konsave update_git update_shell \
-            update_vim
+update: update-autostart update-conky update-konsave update-git update-shell \
+            update-vim
