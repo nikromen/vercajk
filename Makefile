@@ -15,8 +15,8 @@ update-git:
 	\cp -f ./git/.gitconfig $$HOME
 
 update-bash:
-	mkdir -p $$HOME/.config/shell; \
-	\cp -f ./shell/bash/* $$HOME/.config/shell
+	mkdir -p $$HOME/.config/bash; \
+	\cp -f ./shell/bash/* $$HOME/.config/bash
 
 update-fish:
 	\cp -f ./shell/fish/config.fish $$HOME/.config/fish/config.fish
