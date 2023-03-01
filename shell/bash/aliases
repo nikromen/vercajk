@@ -37,3 +37,6 @@ alias pn="podman network"
 alias pnls="podman network ls"
 
 alias p-c="pre-commit run --all-files"
+
+# kitty's wrapper for ssh
+alias kssh="kitty +kitten ssh"
