@@ -1,6 +1,6 @@
 syntax enable
 
-set number
+set number relativenumber
 set expandtab
 
 set encoding=utf-8
