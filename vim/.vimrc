@@ -10,6 +10,7 @@ set shiftwidth=4
 set autoindent
 set colorcolumn=80
 set laststatus=2
+set eol
 
 call plug#begin()
 Plug 'itchyny/lightline.vim'
