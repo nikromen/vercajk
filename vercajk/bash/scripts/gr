@@ -19,7 +19,7 @@ get_remote() {
 
 
 remote=$(get_remote $1)
-if [ "$remote" != "origin" ] && [ "$remote" != "upstream" ]; then
+if [[ "$remote" = -* ]]; then
     git rebase "$@"
     exit 0
 fi

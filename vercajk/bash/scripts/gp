@@ -19,7 +19,11 @@ get_remote() {
 
 
 remote=$(get_remote "$@")
-shift
+if ! [ -z "$remote" ]; then
+    shift
+else
+    remote="origin"
+fi
 
 if ! [ -z "$1" ]; then
     git push -u "$remote" "$@"
