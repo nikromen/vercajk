@@ -1,0 +1,32 @@
+#!/bin/bash
+
+
+set -e
+
+usage() {
+    echo "
+Usage: rename-files MATCH RESULT
+
+  Rename every file in directory according to this pattern
+"
+}
+
+
+__fail() {
+    echo "$*" >&2
+    exit 1
+}
+
+
+if [ "$#" -ne 2 ]; then
+    usage
+    exit 1
+fi
+
+for file in *; do
+    if [[ "$file" != "$1" ]]; then
+        continue
+    fi
+
+    mv "$file" "$2"
+done

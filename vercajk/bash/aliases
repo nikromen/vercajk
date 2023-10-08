@@ -3,31 +3,24 @@ alias dni="sudo dnf install"
 alias dnu="sudo dnf update"
 alias dnin="dnf info"
 
-
 alias ..="cd .."
 alias ..2="cd ../../"
 alias ..3="cd ../../../"
 alias ..4="cd ../../../../"
 alias ..5="cd ../../../../../"
 
-
+alias g="git"
 alias ga="git add"
 alias gb="git branch"
-alias gp="git push -u"
-alias gpo="git push -u origin"
 alias gc="git commit"
-alias gf="git fetch"
-alias gfu="git fetch upstream"
-alias gr="git rebase"
 alias gs="git status"
 alias gsw="git switch"
-alias gswc="git switch -c"
-
+alias gd="git diff"
+alias gbl="git blame"
 
 alias df="df -h"
 alias ls="ls -lha"
-alias we="pwd"
-
+alias lg="ls -lha | grep"
 
 alias pc="podman-compose"
 alias pps="podman ps -a"
@@ -40,3 +33,8 @@ alias p-c="pre-commit run --all-files"
 
 # kitty's wrapper for ssh
 alias kssh="kitty +kitten ssh"
+
+alias sd="sudo su -"
+
+alias sctl="systemctl"
+alias sctlr="systemctl restart"

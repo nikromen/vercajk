@@ -1,26 +1,4 @@
-if status is-interactive
-    # Commands to run in interactive sessions can go here
-end
-
-
-source ~/.config/bash/aliases
-
-
-# every mym local thingy for fish starts with __loc_fish prefix
-
-
 function fish_greeting
-end
-
-
-function __loc_fish_bind_bashes_bang_bang
-    switch (commandline -t)[-1]
-        case "!"
-            commandline -t -- $history[1]
-            commandline -f repaint
-        case "*"
-            commandline -i !
-    end
 end
 
 
@@ -71,11 +49,6 @@ function __loc_fish_concat_prompt
 end
 
 
-function fish_user_key_bindings
-    bind "!" __loc_fish_bind_bashes_bang_bang
-end
-
-
 function fish_prompt
     set -l last_status "$pipestatus[-1]"
     set -l suffix "\$"
@@ -87,4 +60,31 @@ function fish_prompt
 
     __loc_fish_concat_prompt "$last_status" "$last_dir"
     echo "$suffix "
+end
+
+
+function __loc_fish_bind_bashes_bang_bang
+    switch (commandline -t)[-1]
+        case "!"
+            commandline -t -- $history[1]
+            commandline -f repaint
+        case "*"
+            commandline -i !
+    end
+end
+
+
+function __loc_fish_bind_touch_alias
+    switch (commandline -t)[-1]
+        case " "
+            commandline -t -- "touch "
+        case "*"
+            commandline -i ">"
+    end
+end
+
+
+function fish_user_key_bindings
+    bind "!" __loc_fish_bind_bashes_bang_bang
+    bind ">" __loc_fish_bind_touch_alias
 end

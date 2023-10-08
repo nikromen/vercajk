@@ -1,0 +1,2 @@
+source ~/.config/bash/aliases
+alias cib="call_in_bash"

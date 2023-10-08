@@ -1,0 +1,34 @@
+#!/bin/bash
+
+
+set -e
+
+get_remote() {
+    case "$1" in
+        "o")
+            echo "origin"
+            ;;
+        "u")
+            echo "upstream"
+            ;;
+        *)
+            echo "$1"
+            ;;
+    esac
+}
+
+
+remote=$(get_remote $1)
+if [ "$remote" != "origin" ] && [ "$remote" != "upstream" ]; then
+    git rebase "$@"
+    exit 0
+fi
+
+
+gf "$1"
+remote=$(get_remote $1)
+git rebase $remote/$(git branch --show-current)
+
+if [ -n "$(git submodule status)" ]; then
+    git submodule update --recursive
+fi

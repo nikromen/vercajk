@@ -1,0 +1,18 @@
+if [ -e $HOME/.config/bash/aliases ]; then
+    source $HOME/.config/bash/aliases
+fi
+
+
+if [ -e $HOME/.config/bash/conf ]; then
+    source $HOME/.config/bash/conf
+fi
+
+
+if [ -e $HOME/.config/bash/variables ]; then
+    source $HOME/.config/bash/variables
+fi
+
+
+if [ -e $HOME/.config/bash/custom_scripts ]; then
+    source $HOME/.config/bash/custom_scripts
+fi

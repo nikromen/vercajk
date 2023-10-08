@@ -1,0 +1,43 @@
+# IDEs
+.idea/
+.vscode/
+
+
+# Python
+__pycache__/
+*.py[cod]
+.mypy_cache/
+*$py.class
+.eggs/
+*.egg-info/
+*.egg
+
+# Sphinx documentation
+docs/_build/
+
+# Environments
+.env
+.venv
+
+
+# C/C++
+*.o
+*.ko
+*.obj
+*.elf
+*.lib
+*.a
+*.la
+*.lo
+*.out
+
+
+# Java
+*.class
+*.jar
+
+
+# sus files
+*.rpm
+*.src.rpm
+*.tar.gz

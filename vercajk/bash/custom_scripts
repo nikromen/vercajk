@@ -1,6 +1,8 @@
-prm() {
-    podman rm -f $(podman ps -qa)
+__fail() {
+    echo "$*" >&2
+    exit 1
 }
+
 
 mkcd() {
     mkdir "${1}" && cd "${1}"

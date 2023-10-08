@@ -1,7 +1,6 @@
 syntax enable
 
 set number relativenumber
-set expandtab
 
 set encoding=utf-8
 set tabstop=4
@@ -11,6 +10,13 @@ set autoindent
 set colorcolumn=80
 set laststatus=2
 set eol
+set hlsearch
+
+set t_Co=256
+
+" show trail spaces
+set list
+set listchars=trail:_
 
 call plug#begin()
 Plug 'itchyny/lightline.vim'

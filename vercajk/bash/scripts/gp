@@ -1,0 +1,36 @@
+#!/bin/bash
+
+
+set -e
+
+get_remote() {
+    case "$1" in
+        "o")
+            echo "origin"
+            ;;
+        "u")
+            echo "upstream"
+            ;;
+        *)
+            echo "$1"
+            ;;
+    esac
+}
+
+
+remote=$(get_remote "$@")
+shift
+
+if ! [ -z "$1" ]; then
+    git push -u "$remote" "$@"
+    exit 0
+fi
+
+branch=$(git branch --show-current)
+if [[ "$branch" = "main" || "$branch" = "master" ]]; then
+    echo "You are going to push to main/master branch"
+    echo "You have 5 sec to cancel this"
+    sleep 5
+fi
+
+git push -u "$remote" "$branch"
