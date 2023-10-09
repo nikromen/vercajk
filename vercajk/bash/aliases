@@ -20,7 +20,7 @@ alias gbl="git blame"
 
 alias df="df -h"
 alias ls="ls -lha"
-alias lg="ls -lha | grep"
+alias lsg="ls -lha | grep"
 
 alias pc="podman-compose"
 alias pps="podman ps -a"
