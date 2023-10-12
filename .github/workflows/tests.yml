@@ -1,0 +1,25 @@
+name: Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          dnf install podman -y
+
+      - name: Run
+        run: |
+          img_name="vercajk-test:latest"
+          podman build -t $img_name -f test/Containerfile .
+          podman run $img_name /bin/bash -ci "make; vercajk update"
