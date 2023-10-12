@@ -48,7 +48,7 @@ def entry_point() -> None:
     type=str,
     required=False,
     multiple=True,
-    help="Exclude these tools from update."
+    help="Exclude these tools from update.",
 )
 @click.argument(
     "what",
@@ -88,7 +88,9 @@ def test() -> None:
     Returns:
         Exits with failure if tests won't pass
     """
-    process = subprocess.run(["bash", "./test_deploy.sh"], cwd=_get_vercajk_path() / "test")
+    process = subprocess.run(
+        ["bash", "./test_deploy.sh"], cwd=_get_vercajk_path() / "test"
+    )
     exit(process.returncode)
 
 

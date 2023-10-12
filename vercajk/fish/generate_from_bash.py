@@ -45,9 +45,7 @@ class Converterator3000:
                 functions_to_call_in_bash.append(candidate)
 
         fish_fn_template = (
-            "function {fn_name}\n"
-            "    call_in_bash {fn_name} $argv\n"
-            "end\n\n"
+            "function {fn_name}\n" "    call_in_bash {fn_name} $argv\n" "end\n\n"
         )
         lines = []
         for fn in functions_to_call_in_bash:
