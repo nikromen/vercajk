@@ -14,7 +14,7 @@ fi
 
 gf "$1"
 remote=$(get_remote $1)
-git rebase $remote/$(git branch --show-current)
+git rebase $remote/$(get_default_main_branch)
 
 if [ -n "$(git submodule status)" ]; then
     git submodule update --recursive
