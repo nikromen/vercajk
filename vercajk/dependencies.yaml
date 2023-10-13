@@ -1,0 +1,10 @@
+# just a file of dependencies to tell the install script what to install first
+
+- tool: fish
+  deps:
+    - bash
+
+- tool: bash
+  deps:
+    - uwu
+    - lala
