@@ -1,22 +1,9 @@
 #!/bin/bash
 
+source $HOME/.local/share/vercajk/bash_functions/bash_private_functions.sh
+
 
 set -e
-
-get_remote() {
-    case "$1" in
-        "o")
-            echo "origin"
-            ;;
-        "u")
-            echo "upstream"
-            ;;
-        *)
-            echo "$1"
-            ;;
-    esac
-}
-
 
 remote=$(get_remote "$@")
 if ! [ -z "$remote" ]; then

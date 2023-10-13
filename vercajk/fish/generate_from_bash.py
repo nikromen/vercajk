@@ -30,7 +30,7 @@ class Converterator3000:
                 fish_vars.write(line + "\n")
 
     def get_scripts(self) -> None:
-        scripts_file_path = self.bash_dir / "custom_scripts"
+        scripts_file_path = self.bash_dir / "bin"
         if not scripts_file_path.exists():
             return
 
@@ -45,9 +45,7 @@ class Converterator3000:
                 functions_to_call_in_bash.append(candidate)
 
         fish_fn_template = (
-            "function {fn_name}\n"
-            "    call_in_bash {fn_name} $argv\n"
-            "end\n\n"
+            "function {fn_name}\n" "    call_in_bash {fn_name} $argv\n" "end\n\n"
         )
         lines = []
         for fn in functions_to_call_in_bash:

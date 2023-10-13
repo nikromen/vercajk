@@ -19,4 +19,6 @@ if [ -e \$HOME/.config/bash/custom_bash_profile_merged ]; then
 fi" >> $HOME/.bashrc
 fi
 
-install -p -m 0755 ./scripts/* $HOME/.local/bin
+mkdir -p $HOME/.local/share/vercajk/bash_functions
+rsync ./share/* $HOME/.local/share/vercajk/bash_functions
+install -p -m 0755 ./bin/* $HOME/.local/bin
