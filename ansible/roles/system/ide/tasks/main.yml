@@ -1,0 +1,39 @@
+- name: Enable pycharm from copr repository
+  community.general.copr:
+    name: phracek/PyCharm
+    state: enabled
+
+- name: Install pycharm
+  package:
+    name: pycharm-community
+    state: present
+
+- name: Enable vscode repo
+  rpm_key:
+    key: https://packages.microsoft.com/keys/microsoft.asc
+    state: present
+
+- name: Create Visual Studio Code repo
+  ansible.builtin.copy:
+    dest: /etc/yum.repos.d/vscode.repo
+    content: |
+      [code]
+      name=Visual Studio Code
+      baseurl=https://packages.microsoft.com/yumrepos/vscode
+      enabled=1
+      gpgcheck=1
+      gpgkey=https://packages.microsoft.com/keys/microsoft.asc
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Check updates
+  command:
+    # ignore errors and warnings
+    cmd: dnf check-update || true
+  changed_when: false
+
+- name: Install vscode
+  package:
+    name: code
+    state: present

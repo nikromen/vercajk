@@ -1,0 +1,8 @@
+---
+- name: Play the dotfiles role on specified hosts under username
+  hosts: "{{ hosts }}"
+  become: true
+  become_user: "{{ ansible_user }}"
+
+  roles:
+    - role: dotfiles

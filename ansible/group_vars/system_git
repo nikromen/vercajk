@@ -1,0 +1,6 @@
+---
+git_utils:
+  - tig
+
+gui_git_utils:
+  - gitk

@@ -1,0 +1,14 @@
+---
+- name: Install containers
+  import_tasks: containers.yml
+
+- name: Install developement tools
+  import_tasks: dev_tools.yml
+
+- name: Install programming languages onto the system
+  import_tasks: prog_langs.yml
+
+- name: Import RPM related dev tools
+  import_tasks: rpm.yml
+  tags:
+    - rpm

@@ -1,0 +1,30 @@
+---
+- name: Get timedatectl status
+  command:
+    cmd: timedatectl show
+  register: timedatectl_status
+  changed_when: false
+
+- name: Synchronize clock over the network
+  command:
+    cmd: timedatectl set-ntp true
+  changed_when: true
+  when: timedatectl_status.stdout.find('NTP') == "no"
+
+- name: Register /etc/locale.conf
+  command:
+    cmd: cat /etc/locale.conf
+  register: locale_conf
+  changed_when: false
+
+- name: Use convenient locales (I mean US date, etc... WTF is that)
+  command:
+    cmd: localectl set-locale {{ item }}
+  with_items:
+    - "{{ locales }}"
+  when: item not in locale_conf.stdout
+  changed_when: true
+
+- name: Set timezone to Europe/Prague
+  community.general.timezone:
+    name: Europe/Prague

@@ -1,0 +1,26 @@
+---
+core_packages:
+  - gcc
+  - gcc-c++
+  - glibc-langpack-en
+  - glibc-langpack-cs
+  - htop
+  - lm_sensors
+  - openconnect
+  - openvpn
+  - cmake
+  - make
+  - kitty
+
+locales:
+  - LC_ADDRESS=cs_CZ.UTF-8
+  - LC_NAME=cs_CZ.UTF-8
+  - LC_MONETARY=cs_CZ.UTF-8
+  - LC_TIME=cs_CZ.UTF-8
+  - LC_NUMERIC=cs_CZ.UTF-8
+  - LC_TELEPHONE=cs_CZ.UTF-8
+  - LC_MEASUREMENT=cs_CZ.UTF-8
+
+browsers:
+  - firefox
+  - chromium

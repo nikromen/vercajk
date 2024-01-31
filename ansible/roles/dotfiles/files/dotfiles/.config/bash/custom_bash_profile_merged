@@ -1,0 +1,21 @@
+BASH_CONF_D=$HOME/.config/bash
+
+
+if [ -e $HOME/.config/bash/aliases ]; then
+    source $BASH_CONF_D/aliases
+fi
+
+
+if [ -e $HOME/.config/bash/conf ]; then
+    source $BASH_CONF_D/conf
+fi
+
+
+if [ -e $HOME/.config/bash/variables ]; then
+    source $BASH_CONF_D/variables
+fi
+
+
+if [ -e $HOME/.config/bash/custom_scripts ]; then
+    source $BASH_CONF_D/custom_scripts
+fi

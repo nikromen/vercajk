@@ -1,0 +1,27 @@
+# ansible lint is just too big for pre-commit GitHub CI
+
+name: ansible-lint
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ansible-core
+        shell: bash
+        run: pip install ansible-core
+
+      - name: Install collections
+        shell: bash
+        run: ansible-galaxy collection install -r ansible/collections/requirements.yml
+
+      - name: Run ansible-lint
+        uses: ansible/ansible-lint@v6.22.2

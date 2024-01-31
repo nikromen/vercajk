@@ -1,0 +1,13 @@
+---
+- name: Set up containers
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ container_packages }}"
+
+- name: Symlink podman to docker
+  file:
+    src: /usr/bin/podman
+    dest: /usr/bin/docker
+    state: link

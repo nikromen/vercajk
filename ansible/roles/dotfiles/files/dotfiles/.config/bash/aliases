@@ -1,0 +1,47 @@
+alias dns="dnf search"
+alias dni="sudo dnf install"
+alias dnu="sudo dnf update"
+alias dnin="dnf info"
+
+alias ..="cd .."
+alias ..2="cd ../../"
+alias ..3="cd ../../../"
+alias ..4="cd ../../../../"
+alias ..5="cd ../../../../../"
+
+alias g="git"
+alias ga="git add"
+alias gb="git branch"
+alias gc="git commit"
+alias gs="git status"
+alias gsw="git switch"
+alias gd="git diff"
+alias gbl="git blame"
+
+alias df="df -h"
+alias ls="ls -lha"
+alias lsg="ls -lha | grep"
+
+alias pc="podman-compose"
+alias pps="podman ps -a"
+alias pi="podman image"
+alias pils="podman image list -a"
+alias pn="podman network"
+alias pnls="podman network ls"
+
+alias p-c="pre-commit run --all-files"
+
+# kitty's wrapper for ssh
+alias kssh="kitty +kitten ssh"
+
+alias sd="sudo su -"
+
+alias sctl="systemctl"
+alias sctlr="systemctl restart"
+
+alias wget="wget2"
+
+alias cdv='cd "$vercajk"'
+alias cdvd='cd "$vercajk/dotfiles"'
+
+alias vim="nvim"

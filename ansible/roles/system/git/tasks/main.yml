@@ -1,0 +1,20 @@
+---
+- name: Install git
+  package:
+    name: git
+    state: present
+
+- name: Install git utils
+  package:
+    name: "{{ git_utils }}"
+    state: present
+  tags:
+    - dev_tools
+
+- name: Install GUI git utils
+  package:
+    name: "{{ gui_git_utils }}"
+    state: present
+  tags:
+    - gui
+    - dev_tools

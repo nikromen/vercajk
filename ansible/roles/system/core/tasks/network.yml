@@ -1,0 +1,11 @@
+---
+- name: Install network packages
+  package:
+    name: "@networkmanager-submodules"
+    state: present
+
+- name: Allow NetworkManager
+  service:
+    name: NetworkManager
+    enabled: true
+    state: started

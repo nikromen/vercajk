@@ -1,0 +1,10 @@
+---
+- name: Install base dev packages
+  package:
+    name: "{{ dev_apps }}"
+    state: present
+
+- name: Install virtualization tools
+  package:
+    name: "@virtualization"
+    state: present

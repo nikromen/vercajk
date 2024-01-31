@@ -1,0 +1,7 @@
+gh=~/Documents/git/github
+gl=~/Documents/git/gitlab
+pg=~/Documents/git/pagure
+dg=~/Documents/git/distgit
+packit="$gh/packit"
+copr="$gh/copr"
+vercajk="$(vercajk path)"

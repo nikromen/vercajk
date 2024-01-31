@@ -1,0 +1,21 @@
+- name: Rsync home folder with current one in git repo
+  ansible.posix.synchronize:
+    src: dotfiles/
+    dest: "{{ home_dir }}"
+    recursive: true
+    compress: false
+    links: true
+    perms: true
+    times: false
+
+- name: Import bash
+  import_tasks: bash.yml
+
+- name: Import fish
+  import_tasks: fish.yml
+
+- name: Import startup tasks
+  import_tasks: startup.yml
+
+- name: Import vim
+  import_tasks: vim.yml

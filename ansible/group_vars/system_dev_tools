@@ -1,0 +1,32 @@
+---
+container_packages:
+  - podman
+  - buildah
+  - podman-compose
+
+dev_apps:
+  - valgrind
+  - gdb
+  - cppcheck
+  - pipenv
+  - postgresql
+  - pre-commit
+
+dev_apps_rpm_and_work_related:
+  - copr-cli
+  - packit
+  - fedpkg
+  - mock
+  - rpmdevtools
+  - hugo
+
+base_prog_langs:
+  - golang
+  - rust
+  - cargo
+  - java-latest-openjdk
+  - java-latest-openjdk-devel
+  - nodejs
+
+weird_prog_langs:
+  - haskell-platform

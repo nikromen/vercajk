@@ -1,1 +1,6 @@
 .idea/
+.mypy_cache/
+.vscode/
+
+# ignore locally installed ansible collections
+ansible/collections/ansible_collections/

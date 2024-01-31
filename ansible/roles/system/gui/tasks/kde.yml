@@ -1,0 +1,5 @@
+---
+- name: Install KDE
+  package:
+    name: "@kde-desktop"
+    state: present

@@ -1,0 +1,26 @@
+---
+- name: Play the system role on specified hosts under username
+  hosts: all
+  become: true
+  become_user: root
+
+  roles:
+    - role: system/core
+    - role: system/dev_tools
+      tags:
+        - dev_tools
+    - role: system/git
+    - role: system/gui
+      tags:
+        - gui
+    - role: system/python
+    - role: system/vercajk
+    - role: system/ide
+      tags:
+        - ide
+  # FIXME: This should work by default
+  vars_files:
+    - group_vars/system_core
+    - group_vars/system_dev_tools
+    - group_vars/system_git
+    - group_vars/system_gui

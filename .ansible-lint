@@ -1,0 +1,6 @@
+skip_list:
+  - fqcn[action-core]
+
+exclude_paths:
+  - ansible/play_*.yml
+  - ansible/collections/ansible_collections/*
