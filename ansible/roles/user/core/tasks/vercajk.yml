@@ -24,6 +24,7 @@
   git:
     repo: git@github.com:nikromen/vercajk.git
     dest: "{{ home_dir }}/Documents/git/github/nikromen/vercajk"
+  when: not vercajk_repo.stat.exists
   register: git_clone_vercajk
 
 - name: Clone vercajk repo but without ssh if prev task failed
@@ -31,11 +32,11 @@
   git:
     repo: https://github.com/nikromen/vercajk.git
     dest: "{{ home_dir }}/Documents/git/github/nikromen/vercajk"
-  when: git_clone_vercajk.failed
+  when: not vercajk_repo.stat.exists and git_clone_vercajk.failed
 
 - name: Install vercajk repo if it was just cloned
   command:
     cmd: make install
     chdir: "{{ home_dir }}/Documents/git/github/nikromen/vercajk"
   changed_when: true
-  when: vercajk_repo.stat.exists
+  when: not vercajk_repo.stat.exists

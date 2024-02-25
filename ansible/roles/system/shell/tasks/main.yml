@@ -1,0 +1,5 @@
+---
+- name: Import fish tasks
+  import_tasks: fish.yml
+  tags:
+    - fish

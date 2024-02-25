@@ -10,6 +10,7 @@
       tags:
         - dev_tools
     - role: system/git
+    - role: system/shell
     - role: system/gui
       tags:
         - gui
