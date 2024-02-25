@@ -38,4 +38,4 @@
     cmd: make install
     chdir: "{{ home_dir }}/Documents/git/github/nikromen/vercajk"
   changed_when: true
-  when: vercajk_repo.stat.exists
+  when: not vercajk_repo.stat.exists
