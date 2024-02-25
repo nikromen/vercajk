@@ -17,10 +17,15 @@ alias gs="git status"
 alias gsw="git switch"
 alias gd="git diff"
 alias gbl="git blame"
+alias gf="git fetch"
+alias gpr="git pull --rebase --recurse-submodules"
+alias gr="git rebase"
+alias gri="git rebase -i"
+alias grc="git rebase --continue"
+alias gra="git rebase --abort"
 
 alias df="df -h"
-alias ls="ls -lha"
-alias lsg="ls -lha | grep"
+alias ls="ls -lha --color=auto"
 
 alias pc="podman-compose"
 alias pps="podman ps -a"
@@ -31,15 +36,10 @@ alias pnls="podman network ls"
 
 alias p-c="pre-commit run --all-files"
 
-# kitty's wrapper for ssh
-alias kssh="kitty +kitten ssh"
-
 alias sd="sudo su -"
 
-alias sctl="systemctl"
-alias sctlr="systemctl restart"
-
-alias wget="wget2"
+alias sc="systemctl"
+alias scu="systemctl --user"
 
 alias cdv='cd "$vercajk"'
 alias cdvd='cd "$vercajk/dotfiles"'

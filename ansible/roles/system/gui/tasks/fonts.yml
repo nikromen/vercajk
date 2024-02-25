@@ -3,3 +3,8 @@
   package:
     name: "@fonts"
     state: present
+
+- name: Install awesome fonts
+  package:
+    name: "fontawesome-fonts"
+    state: present

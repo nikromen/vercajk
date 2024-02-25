@@ -1,0 +1,13 @@
+#!/bin/bash
+
+
+set -e
+
+usage() {
+    echo "Usage: $0 [OPTIONS] PATTERN
+    Options:
+        -h, --help      Show this help message and exit
+    "
+}
+
+ls -lha --color=auto | grep "$1"

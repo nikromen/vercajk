@@ -8,3 +8,16 @@
   package:
     name: neovim
     state: present
+
+- name: Check if exec vim works
+  command:
+    cmd: "vim --version"
+  register: vim_output
+  changed_when: false
+
+- name: Set symlink to vim if exec vim does not work
+  file:
+    src: /usr/bin/nvim
+    dest: /usr/bin/vim
+    state: link
+  when: vim_output.rc != 0

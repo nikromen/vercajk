@@ -1,0 +1,7 @@
+#!/bin/bash
+
+
+set -e
+
+killall plasmashell
+kstart5 plasmashell & disown
