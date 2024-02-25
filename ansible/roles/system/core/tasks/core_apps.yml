@@ -1,0 +1,7 @@
+---
+- name: Install core packages necessarry for the system
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ core_packages }}"

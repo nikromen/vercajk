@@ -1,0 +1,40 @@
+---
+- name: Create bashrc if not exist
+  file:
+    path: "{{ home_dir }}/.bashrc"
+    state: touch
+    mode: "0600"
+    modification_time: preserve
+    access_time: preserve
+
+- name: Check the last line of bashrc
+  command:
+    cmd: "tail -c 1 {{ home_dir }}/.bashrc"
+  register: last_line
+  # never changes anything
+  changed_when: false
+
+- name: Insert empty line at the end of bashrc
+  command:
+    cmd: echo "" >> "$HOME/.bashrc"
+  changed_when: last_line.stdout != ""
+  when: last_line.stdout != ""
+
+- name: Test for bash addons in .bashrc
+  command:
+    cmd: "grep -qL {{ home_dir }}/.config/bash/custom_bash_profile_merged {{ home_dir }}/.bashrc"
+  register: test_addons
+  failed_when:
+    - test_addons.rc not in [0, 1]
+    - add_result.stderr | default("") is not search ("/.bashrc")
+  # never changes anything
+  changed_when: false
+
+- name: Append shell configs to .bashrc file
+  blockinfile:
+    path: "{{ home_dir }}/.bashrc"
+    block: |
+      if [ -e $HOME/.config/bash/custom_bash_profile_merged ]; then
+          source $HOME/.config/bash/custom_bash_profile_merged
+      fi
+  when: test_addons.stdout == "0"

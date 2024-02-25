@@ -1,3 +1,9 @@
+ci:
+  autofix_prs: false
+  # ansible lint is too big for pre-commit GitHub CI
+  skip:
+    - ansible-lint
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
@@ -21,7 +27,7 @@ repos:
       - id: trailing-whitespace
 
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.0-alpha.4
+    rev: v3.1.0
     hooks:
       - id: prettier
 
@@ -66,3 +72,11 @@ repos:
         args:
           - --profile=black
           - --filter-files
+
+  - repo: https://github.com/ansible-community/ansible-lint.git
+    rev: v6.22.2
+    hooks:
+      - id: ansible-lint
+        files: \.(yaml|yml)$
+        additional_dependencies:
+          - ansible

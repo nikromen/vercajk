@@ -1,0 +1,5 @@
+---
+- name: Install dev packages related to RPM and work
+  package:
+    name: "{{ dev_apps_rpm_and_work_related }}"
+    state: present

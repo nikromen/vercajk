@@ -1,0 +1,21 @@
+---
+flatpak_core:
+  - com.obsproject.Studio
+  - com.discordapp.Discord
+  - org.signal.Signal
+  - org.telegram.desktop
+  - com.bitwarden.desktop
+  - im.riot.Riot
+  - org.gimp.GIMP
+
+flatpak_multimedia:
+  - org.videolan.VLC
+  - com.spotify.Client
+
+flatpak_dev:
+  - rest.insomnia.Insomnia
+  - org.filezillaproject.Filezilla
+
+flatpak_games:
+  - com.valvesoftware.Steam
+  - com.play0ad.zeroad

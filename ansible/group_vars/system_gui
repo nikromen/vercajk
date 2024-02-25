@@ -1,0 +1,8 @@
+---
+gui_core_packages:
+  - ark
+  - ocrmypdf
+  - ffmpeg-free
+
+gui_core_packages_rpm:
+  - mediawriter

@@ -1,0 +1,5 @@
+---
+- name: Install core plugins for dnf
+  package:
+    name: dnf-plugins-core
+    state: present

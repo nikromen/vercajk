@@ -1,0 +1,31 @@
+---
+- name: Create folders in root of Documents
+  file:
+    path: "{{ home_dir }}/Documents/{{ item }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    state: directory
+    mode: "0750"
+  with_items:
+    - "{{ docs_root_dirs }}"
+
+- name: Create directories for git forges
+  file:
+    path: "{{ home_dir }}/Documents/git/{{ item }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0775"
+    recurse: true
+  with_items:
+    - "{{ git_forges }}"
+
+- name: Create rpm folder hierarchy inside Documents
+  file:
+    path: "{{ home_dir }}/Documents/rpm/{{ item }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    state: directory
+    mode: "0750"
+  with_items:
+    - "{{ docs_root_dirs }}"

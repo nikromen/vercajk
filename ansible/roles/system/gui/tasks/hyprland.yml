@@ -1,0 +1,10 @@
+---
+- name: Enable hyprland from copr repository
+  community.general.copr:
+    name: solopasha/hyprland
+    state: enabled
+
+- name: Install hyprland
+  package:
+    name: hyprland
+    state: present

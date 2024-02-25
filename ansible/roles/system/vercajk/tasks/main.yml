@@ -1,0 +1,10 @@
+---
+# - name: Enable vercajk from copr repository
+#   community.general.copr:
+#     name: nikromen/vercajk
+#     state: enabled
+
+# - name: Install vercajk-cli
+#   package:
+#     name: vercajk-cli
+#     state: present

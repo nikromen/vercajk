@@ -1,0 +1,26 @@
+---
+- name: Set up fonts
+  import_tasks: fonts.yml
+
+- name: Set up hyprland window manager
+  import_tasks: hyprland.yml
+
+- name: Install KDE Plasma
+  import_tasks: kde.yml
+  tags:
+    - kde
+
+- name: Import sound and multimedia
+  import_tasks: sound_and_multimedia.yml
+
+- name: Install core gui packages
+  package:
+    name: "{{ gui_core_packages }}"
+    state: present
+
+- name: Install core gui packages for rpm based systems
+  package:
+    name: "{{ gui_core_packages_rpm }}"
+    state: present
+  tags:
+    - rpm

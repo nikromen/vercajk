@@ -1,0 +1,26 @@
+---
+- name: Check if poetry is installed
+  ignore_errors: true
+  command:
+    cmd: poetry --version
+  changed_when: false
+  register: poetry_version
+  tags:
+    - dev_tools
+
+- name: Download poetry
+  get_url:
+    url: https://install.python-poetry.org
+    dest: /tmp/install-poetry.py
+    mode: "0755"
+  when: poetry_version.rc != 0
+  tags:
+    - dev_tools
+
+- name: Install poetry for python
+  command:
+    cmd: python3 /tmp/install-poetry.py
+  when: poetry_version.rc != 0
+  changed_when: true
+  tags:
+    - dev_tools
