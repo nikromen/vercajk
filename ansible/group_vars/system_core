@@ -10,7 +10,14 @@ core_packages:
   - openvpn
   - cmake
   - make
-  - kitty
+  - alacritty
+  - fzf
+  - btop
+  - tree
+  - stow
+  - tmux
+  - util-linux
+  - zoxide
 
 locales:
   - LC_ADDRESS=cs_CZ.UTF-8
@@ -24,3 +31,11 @@ locales:
 browsers:
   - firefox
   - chromium
+
+
+notas:
+#https://discussion.fedoraproject.org/t/installing-intel-media-driver-and-gstreamer-vaapi/91131
+  - core
+
+fingerprint:
+  - fprintd

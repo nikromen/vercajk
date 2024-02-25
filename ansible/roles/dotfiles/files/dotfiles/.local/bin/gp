@@ -20,7 +20,7 @@ fi
 branch=$(git branch --show-current)
 main=$(get_default_main_branch)
 if [[ "$branch" = "$main" ]]; then
-    echo "You are going to push to $main branch"
+    echo "You are going to push to ${remote}/${main} branch"
     echo "You have 5 sec to cancel this"
     sleep 5
 fi

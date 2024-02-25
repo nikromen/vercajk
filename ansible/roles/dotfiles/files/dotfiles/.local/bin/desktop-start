@@ -1,0 +1,84 @@
+#!/bin/bash
+
+
+set -e
+
+usage() {
+    echo "Usage: $0 [OPTIONS] Command
+    Start a wayland desktop environment.
+
+    Options:
+    -h | --help         Display this help message
+    -v | --verbose      Verbose output
+
+    Commands:
+    hyprland           Start Hyprland desktop
+    kde                Start KDE desktop
+    gnome              Start Gnome desktop
+    "
+}
+
+ask_for_password_or_exit() {
+    echo "Desktop crashed! Please enter your password to continue, otherwise you will be logged out"
+    sudo -v
+    if [ $? -ne 0 ]; then
+        echo "Password incorrect, logging out"
+        loginctl terminate-user $USER
+        exit 1
+    fi
+}
+
+
+start_hyprland() {
+    echo "Starting Hyprland desktop"
+    Hyprland
+}
+
+
+start_kde() {
+    echo "Locating plasma-dbus-run-session-if-needed"
+    local plasma_dbus_run_session=$(find /usr -name "plasma-dbus-run-session-if-needed" 2>/dev/null | head -n 1)
+    echo "Found $plasma_dbus_run_session"
+    if [ -z "$plasma_dbus_run_session" ]; then
+        echo "Could not find plasma-dbus-run-session-if-needed"
+        exit 1
+    fi
+    echo "Find startplasma-wayland file"
+    local startplasma_wayland=$(find /usr -name "startplasma-wayland" 2>/dev/null | head -n 1)
+    echo "Found $startplasma_wayland"
+    if [ -z "$startplasma_wayland" ]; then
+        echo "Could not find startplasma-wayland"
+        exit 1
+    fi
+    echo "Starting KDE desktop"
+}
+
+
+start_gnome() {
+    echo "Starting Gnome desktop"
+    XDG_SESSION_TYPE=wayland gnome-session
+}
+
+
+main() {
+    local command=$1
+    case $command in
+        hyprland)
+            start_hyprland
+            ;;
+        kde)
+            start_kde
+            ;;
+        gnome)
+            start_gnome
+            ;;
+        *)
+            usage
+            echo "Invalid command" 1>&2
+            # to not jump to password prompt
+            exit 0
+            ;;
+    esac
+}
+
+main "$@" || ask_for_password_or_exit

@@ -1,0 +1,146 @@
+* {
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+}
+
+#waybar {
+    /* lightly visible: background: rgba(0, 0, 0, 0.4); */
+    background: transparent;
+    color: #eeeeef;
+    font-size: 14px;
+    font-family: "Symbols Nerd Font";
+}
+
+#custom-powermenu,
+#custom-notification,
+#cpu,
+#temperature,
+#memory,
+#workspaces,
+#language,
+#clock,
+#pulseaudio,
+#battery,
+#tray,
+#custom-fanspeed,
+#backlight,
+#network {
+    padding: 4px 8px;
+    /* also looks ok #1e1e2e */
+    background-color: #303643;
+    border-radius: 10px;
+    margin: 6px 4px;
+    margin-top: 2px;
+}
+
+#workspaces {
+    padding: 4px 4px;
+}
+
+#workspaces button {
+    padding: 0 5px;
+    color: #eeeeef;
+    border-radius: 10px;
+    margin-right: 1px;
+    margin-left: 1px;
+}
+
+#workspaces button:hover {
+    color: #ff9e9e;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.15);
+}
+
+#workspaces button.active {
+    color: #fa5aa4;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+#custom-powermenu {
+    color: #e06c75;
+    margin-right: 8px;
+}
+
+#custom-notification {
+    color: #e5c07b;
+}
+
+#network {
+    color: #a0f7ff;
+}
+
+#backlight {
+    color: #89b4fa;
+    border-radius: 10px 0px 0px 10px;
+    margin-right: 0px;
+}
+
+#pulseaudio {
+    color: #0fb9b1;
+    border-radius: 0px 0px 0px 0px;
+}
+
+#temperature {
+    color: #98c379;
+}
+
+#memory {
+    color: #e5c07b;
+}
+
+#network.speed {
+    color: #c678dd;
+    min-width: 200px;
+}
+
+#cpu {
+    color: #61afef;
+    min-width: 50px;
+    margin-left: 8px;
+    border-radius: 10px 0px 0px 10px;
+}
+
+#cpu.freq {
+    color: #61afef;
+    min-width: 70px;
+    margin-left: 0px;
+    border-radius: 0px 0px 0px 0px;
+}
+
+#cpu.cores {
+    color: #61afef;
+    margin-left: 0px;
+    border-radius: 0px 0px 0px 0px;
+}
+
+#clock {
+    color: #fff;
+}
+
+#battery {
+    color: #ffadb4;
+    border-radius: 0px 10px 10px 0px;
+    margin-left: 0px;
+}
+
+#battery.warning {
+    background: orange;
+}
+
+#custom-fanspeed {
+    color: #61afef;
+    margin-left: 0px;
+    border-radius: 0px 10px 10px 0px;
+}
+
+#battery.critical {
+    background: red;
+}
+
+#temperature.critical {
+    background: red;
+}

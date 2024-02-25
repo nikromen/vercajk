@@ -1,0 +1,97 @@
+#!/bin/bash
+
+
+set -e
+
+if [ "$EUID" -eq 0 ]; then
+    echo "Error: Please don't run this script as root" >&2
+    exit 1
+fi
+
+usage() {
+    echo "Usage: $0 [OPTIONS]
+    -h, --help          Show this help message
+    -p, --podman        Use podman instead of docker
+    -d, --docker        Use docker instead of podman
+    "
+}
+
+DOCKER_HOST='DOCKER_HOST=unix:///run/user/${UID}/podman/podman.sock'
+CONF_FILE="$HOME/.config/bash/conf"
+DOCKER_HOST_FILE="$HOME/.config/bash/.docker_host"
+
+clear_docker_host() {
+    if [ -e "$HOME/.config/bash/.docker_host" ]; then
+        # scared to use rm here
+        local file_name="docker_host$(uuidgen)"
+        mv "$DOCKER_HOST_FILE" "/tmp/$file_name"
+        rm "/tmp/$file_name"
+    fi
+}
+
+select_podman() {
+    clear_docker_host
+    echo "export $BASH_DOCKER_HOST" >> "$DOCKER_HOST_FILE"
+    sudo systemctl start podman.socket
+    sudo systemctl enable podman.socket
+    local check_podman_socket=$(sudo curl -H "Content-Type: application/json" --unix-socket /var/run/docker.sock http://localhost/_ping)
+    if [ "$check_podman_socket" != "OK" ]; then
+        echo "Failed to start podman.socket, please do it manually" >&2
+        exit 1
+    fi
+}
+
+select_docker() {
+    clear_docker_host
+    sudo systemctl stop podman.socket
+    sudo systemctl disable podman.socket
+}
+
+main() {
+    local podman=false
+    local docker=false
+
+    while [ "$1" != "" ]; do
+        case $1 in
+            -p | --podman)
+                podman=true
+                ;;
+            -d | --docker)
+                docker=true
+                ;;
+            -h | --help)
+                usage
+                exit
+                ;;
+            *)
+                usage
+                exit 1
+                ;;
+        esac
+        shift
+    done
+
+    if [ "$podman" = true ] && [ "$docker" = true ]; then
+        echo "You can't use both podman and docker at the same time" >&2
+        exit 1
+    fi
+
+    if [ "$podman" = false ] && [ "$docker" = false ]; then
+        echo "You must specify either podman or docker" >&2
+        exit 1
+    fi
+
+    if [ "$podman" = true ]; then
+        select_podman
+    fi
+
+    if [ "$docker" = true ]; then
+        select_docker
+    fi
+
+    echo "Done, please refresh your profile. With e.g. bash it is done by:
+    source ~/.bash_profile
+    "
+}
+
+main "$@"

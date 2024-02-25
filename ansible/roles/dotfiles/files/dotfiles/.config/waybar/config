@@ -1,0 +1,187 @@
+{
+    "layer": "top",
+      "position": "bottom",
+      "margin-bottom": 0,
+      "modules-left": [
+        "cpu",
+        "cpu#freq",
+        "cpu#cores",
+        "custom/fanspeed",
+        "temperature",
+        "memory",
+        "network#speed"
+        ],
+      "modules-center": [
+        "hyprland/workspaces"
+        ],
+      "modules-right": [
+        "custom/notification",
+        "hyprland/language",
+        "tray",
+        "backlight",
+        "pulseaudio",
+        "battery",
+        "clock",
+        "custom/powermenu"
+      ],
+      "tray": {
+        "icon-size": 24,
+        "spacing": 10
+      },
+      "hyprland/workspaces": {
+        "tooltip": false,
+        "show-special": true,
+        "on-click": "activate",
+        "sort-by": "name",
+        "format": "{icon}",
+        "format-icons": {
+            "0:1": "1",
+            "0:2": "2",
+            "0:3": "3",
+            "0:4": "4",
+            "0:5": "5",
+            "0:6": "6",
+            "0:7": "7",
+            "0:8": "8",
+            "0:9": "9",
+            "1:1": "1",
+            "1:2": "2",
+            "1:3": "3",
+            "1:4": "4",
+            "1:5": "5",
+            "1:6": "6",
+            "1:7": "7",
+            "1:8": "8",
+            "1:9": "9",
+            "2:1": "1",
+            "2:2": "2",
+            "2:3": "3",
+            "2:4": "4",
+            "2:5": "5",
+            "2:6": "6",
+            "2:7": "7",
+            "2:8": "8",
+            "2:9": "9",
+            "3:1": "1",
+            "3:2": "2",
+            "3:3": "3",
+            "3:4": "4",
+            "3:5": "5",
+            "3:6": "6",
+            "3:7": "7",
+            "3:8": "8",
+            "3:9": "9",
+            "minimized": "",
+            "default": ""
+        }
+      },
+      "backlight": {
+          "device": "intel_backlight",
+          "format": "{icon} {percent}%",
+          "format-icons": ["󰃞", "󰃟", "󰃠"],
+          "on-scroll-up": "brightnessctl set 1%+",
+          "on-scroll-down": "brightnessctl set 1%-",
+          "min-length": 6,
+          "tooltip": false
+      },
+      "hyprland/language": {
+        "format": "  {}",
+        "format-en": "US",
+        "format-cs": "CS",
+        "on-click": "$HOME/.config/hypr/scripts/keyboard_layout.sh"
+      },
+      "network#speed": {
+        "format": "󰇚 {bandwidthDownBits} 󰕒 {bandwidthUpBits}",
+        "interval": 2,
+        "tooltip": false
+      },
+      "temperature": {
+        "format": "{icon} {temperatureC}°C",
+        "critical-threshold": 85,
+        "format-critical": "{temperatureC}°C ",
+        "format-icons": ["", "", ""],
+        "interval": 2,
+        "tooltip": false
+      },
+      "memory": {
+        "format": "󰍛 {}%",
+        "tooltip": false
+      },
+      "cpu": {
+        "format": " {usage}%",
+        "tooltip": false,
+        "interval": 2
+      },
+      "cpu#freq": {
+        "format": "{avg_frequency} GHz",
+        "tooltip": false,
+        "interval": 2
+      },
+      "cpu#cores": {
+        "format": "{icon0} {icon1} {icon2} {icon3}",
+        "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
+        "interval": 2
+      },
+      "custom/fanspeed": {
+        "exec": "$HOME/.config/waybar/scripts/fan_speed.sh",
+        "format": "󰈐 {} RPM",
+        "interval": 5,
+        "return-type": "json"
+      },
+      "custom/notification": {
+        "tooltip": false,
+        "format": "{icon}",
+        "format-icons": {
+          "notification": "<span foreground='red'><sup></sup></span>",
+          "none": "",
+          "dnd-notification": "<span foreground='red'><sup></sup></span>",
+          "dnd-none": "",
+          "inhibited-notification": "<span foreground='red'><sup></sup></span>",
+          "inhibited-none": "",
+          "dnd-inhibited-notification": "<span foreground='red'><sup></sup></span>",
+          "dnd-inhibited-none": ""
+        },
+        "return-type": "json",
+        "exec-if": "which swaync-client",
+        "exec": "swaync-client -swb",
+        "on-click": "swaync-client -t -sw",
+        "on-click-right": "swaync-client -d -sw",
+        "escape": true
+      },
+      "custom/powermenu": {
+        "format": "",
+        "tooltip": false,
+        "on-click": "exec wlogout -p layer-shell"
+      },
+      "pulseaudio": {
+        "format": "{volume}% {icon}",
+        "format-bluetooth": "{volume}% {icon}",
+        "format-muted": "󰝟",
+        "format-icons": {
+            "headphone": "󰋋",
+            "hands-free": "󰥰",
+            "headset": "󰋎",
+            "phone": "",
+            "default": ["", ""]
+        },
+        "scroll-step": 5,
+        "on-click": "pavucontrol"
+      },
+      "clock": {
+        "format": "{:%H:%M}",
+        "interval": 60,
+        "tooltip": true,
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+      },
+      "battery": {
+        "states": {
+          "warning": 30,
+          "critical": 15
+        },
+        "interval": 60,
+        "format": "{icon} {capacity}%",
+        "format-charging": "󰂄 {capacity}%",
+        "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+        "format-time": "{H}h {M}m"
+      }
+  }

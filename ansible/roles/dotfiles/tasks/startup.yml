@@ -1,8 +1,0 @@
----
-- name: Ensure every startup script is in crontab
-  cron:
-    name: "startup"
-    special_time: reboot
-    job: "{{ item }}"
-  with_fileglob:
-    - dotfiles/.config/startup/*

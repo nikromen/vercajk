@@ -1,6 +1,6 @@
 ---
 - name: Play the user role on specified hosts under username
-  hosts: all
+  hosts: localhost
   become: true
   become_user: "{{ ansible_user }}"
 
@@ -18,4 +18,4 @@
   vars_files:
     - group_vars/user_core
     - group_vars/user_flatpak
-    - group_vars/user_konsave
+    #- group_vars/user_konsave

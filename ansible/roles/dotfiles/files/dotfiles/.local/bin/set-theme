@@ -1,0 +1,54 @@
+#!/bin/bash
+
+
+set -e
+
+usage() {
+    echo "Usage: $0 [OPTIONS] THEME
+    Options:
+        -h, --help      Show this help message and exit
+        -l, --list      List available themes
+    "
+}
+
+
+list_themes() {
+    echo "Available themes:"
+    for theme in /usr/share/themes/*; do
+        echo "$(basename $theme)"
+    done
+}
+
+
+set_theme() {
+    if [ -z "$1" ]; then
+        echo "No theme specified"
+        exit 1
+    fi
+
+    if [ ! -d "/usr/share/themes/$1" ]; then
+        echo "Theme $1 not found"
+        exit 1
+    fi
+
+    gsettings set org.gnome.desktop.interface gtk-theme "$1"
+}
+
+
+while [ "$1" != "" ]; do
+    case $1 in
+        -h | --help )
+            usage
+            exit
+            ;;
+        -l | --list )
+            list_themes
+            exit
+            ;;
+        * )
+            set_theme $1
+            exit
+            ;;
+    esac
+    shift
+done

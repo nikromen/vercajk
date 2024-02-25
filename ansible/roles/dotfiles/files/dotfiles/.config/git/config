@@ -1,0 +1,12 @@
+[user]
+    name = Jiri Kyjovsky
+    email = j1.kyjovsky@gmail.com
+[core]
+    editor = vim
+    excludesfile = ~/.config/git/ignore
+[pull]
+    rebase = true
+[rebase]
+    autoStash = true
+[alias]
+    adog = log --all --decorate --oneline --graph

@@ -24,3 +24,12 @@
     state: present
   tags:
     - rpm
+
+- name: Install Papirus icon theme
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - papirus-icon-theme
+    - papirus-icon-theme-dark
+    - papirus-icon-theme-light

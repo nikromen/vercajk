@@ -1,6 +1,0 @@
----
-- name: Install vim plugins
-  command:
-    cmd: vim {{ home_dir }}/.vimrc -c PlugInstall -c wqa
-  register: vim_install_cmd
-  changed_when: "'Resolving deltas' in vim_install_cmd.stdout"

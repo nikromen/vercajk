@@ -5,8 +5,8 @@
 - name: Set up python for user
   import_tasks: python.yml
 
-- name: Set up vim and install plugins
-  import_tasks: vim.yml
-
 - name: Clone and install vercajk git repo
   import_tasks: vercajk.yml
+
+- name: Setup tmux
+  import_tasks: tmux.yml

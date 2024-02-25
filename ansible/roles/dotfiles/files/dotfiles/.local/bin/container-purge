@@ -1,0 +1,157 @@
+#!/bin/bash
+
+
+set -e
+
+usage() {
+    echo "Usage: $0 [OPTIONS] PATTERN
+    -h, --help      Display this help and exit
+    -p, --podman    Use podman
+    -d, --docker    Use docker
+    -f, --force
+    --prune         Prune everything
+    "
+}
+
+confirm_deletion() {
+    local to_delete="$1"
+    local kind="$2"
+    if [ "$kind" = "images" ]; then
+        to_delete=$(eval "$CONTAINER_RUNTIME image ls -a --format '{{.Repository}}:{{.Tag}}    {{.ID}}' --filter reference='*$PATTERN*'")
+    fi
+
+    printf "Are you sure you want to delete the following $kind?\n$to_delete\n[y/N]: "
+    read -r response
+    if [ "$response" = "y" ]; then
+        return 0
+    fi
+    return 1
+}
+
+# sometimes bulk deletion fails, idk why, this is dumb proof
+delete_in_loop() {
+    local objects_to_delete="$1"
+    local command="$2"
+    for to_delete in $objects_to_delete; do
+        eval "$command $FORCE $to_delete"
+        echo "Deleted $object_type $to_delete"
+    done
+}
+
+delete_con() {
+    local objects_to_delete="$1"
+    local object_type="$2"
+    local command=""
+    if confirm_deletion "$objects_to_delete" "$object_type"; then
+        case "$object_type" in
+            "containers")
+                command="$CONTAINER_RUNTIME rm"
+                ;;
+            "images")
+                command="$CONTAINER_RUNTIME image rm"
+                ;;
+            "volumes")
+                command="$CONTAINER_RUNTIME volume rm"
+                ;;
+            "networks")
+                command="$CONTAINER_RUNTIME network rm"
+                ;;
+        esac
+        delete_in_loop "$objects_to_delete" "$command"
+    fi
+}
+
+purge() {
+    # append pattern to these
+    declare -A object_types=(
+        ["containers"]="ps -qa --filter name"
+        ["images"]="image ls -qa"
+        ["volumes"]="volume ls -q --filter name"
+        ["networks"]="network ls -q --filter name"
+    )
+
+    for object_type in "${!object_types[@]}"; do
+        local command="${object_types[$object_type]}"
+        local objects_to_delete=""
+        if [ "$object_type" = "images" ]; then
+            objects_to_delete=$(eval "$CONTAINER_RUNTIME $command '*$PATTERN*'")
+        else
+            objects_to_delete=$(eval "$CONTAINER_RUNTIME $command=$PATTERN")
+        fi
+
+        if [ -z "$objects_to_delete" ]; then
+            echo "No $object_type found matching pattern $PATTERN"
+        else
+            delete_con "$objects_to_delete" "$object_type" "$CONTAINER_RUNTIME"
+        fi
+    done
+}
+
+prune() {
+    echo "Pruning all containers, images, volumes, and networks"
+    $CONTAINER_RUNTIME system prune $FORCE
+    $CONTAINER_RUNTIME volume prune $FORCE
+    $CONTAINER_RUNTIME network prune $FORCE
+    $CONTAINER_RUNTIME image prune $FORCE
+}
+
+main() {
+    local podman=false
+    local docker=false
+    local prune=false
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            -h|--help)
+                usage
+                exit 0
+                ;;
+            -p|--podman)
+                podman=true
+                ;;
+            -d|--docker)
+                docker=true
+                ;;
+            --prune)
+                prune=true
+                ;;
+            -f|--force)
+                FORCE=" --force"
+                ;;
+            *)
+                break
+                ;;
+        esac
+        shift
+    done
+
+    if [ "$podman" = true ] && [ "$docker" = true ]; then
+        echo "Error: Cannot use both podman and docker"
+        exit 1
+    fi
+
+    if [ "$podman" = false ] && [ "$docker" = false ]; then
+        echo "Error: Must specify either podman or docker"
+        exit 1
+    fi
+
+    CONTAINER_RUNTIME="sudo docker"
+    if [ "$podman" = true ]; then
+        CONTAINER_RUNTIME="podman"
+    fi
+
+    if [ "$prune" = true ]; then
+        prune
+        exit 0
+    fi
+
+    if [ "$#" -ne 1 ]; then
+        echo "Error: Must specify exactly one pattern"
+        exit 1
+    fi
+
+    PATTERN="$1"
+    purge
+}
+
+main "$@"

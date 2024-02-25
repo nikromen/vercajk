@@ -1,10 +1,17 @@
 ---
-- name: Enable hyprland from copr repository
-  community.general.copr:
-    name: solopasha/hyprland
-    state: enabled
-
 - name: Install hyprland
   package:
     name: hyprland
     state: present
+
+- name: Enable copr repo for hyprland packages
+  community.general.copr:
+    name: solopasha/hyprland
+    state: enabled
+
+- name: Install packages needed for nice DE
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ hyprland_packages }}"
