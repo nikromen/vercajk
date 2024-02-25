@@ -1,11 +1,19 @@
 ---
+- name: Create Docs folder
+  file:
+    path: "{{ home_dir }}/Documents"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    state: directory
+    mode: "0755"
+
 - name: Create folders in root of Documents
   file:
     path: "{{ home_dir }}/Documents/{{ item }}"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     state: directory
-    mode: "0750"
+    mode: "0755"
   with_items:
     - "{{ docs_root_dirs }}"
 
@@ -15,8 +23,7 @@
     state: directory
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-    mode: "0775"
-    recurse: true
+    mode: "0755"
   with_items:
     - "{{ git_forges }}"
 
@@ -26,6 +33,6 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     state: directory
-    mode: "0750"
+    mode: "0755"
   with_items:
     - "{{ docs_root_dirs }}"

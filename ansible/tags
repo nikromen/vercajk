@@ -1,5 +1,5 @@
 system:
-rpm, dev_tools, weird_prog_lags, gui, kde, ide
+rpm, dev_tools, weird_prog_lags, gui, kde, ide, fish
 
 user:
 games, dev_tools, gui, rpm, flatpak, kde

@@ -3,3 +3,9 @@
   package:
     name: "@kde-desktop"
     state: present
+
+- name: Enable sddm service
+  service:
+    name: sddm
+    enabled: yes
+    state: started

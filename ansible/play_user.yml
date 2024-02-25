@@ -12,10 +12,10 @@
     - role: user/flatpak
       tags:
         - flatpak
-    - role: user/konsave
-      tags:
-        - kde
+    # - role: user/konsave
+    #   tags:
+    #     - kde
   vars_files:
     - group_vars/user_core
     - group_vars/user_flatpak
-    - group_vars/user_konsave
+    # - group_vars/user_konsave
