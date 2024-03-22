@@ -1,0 +1,162 @@
+{
+    "layer": "top",
+      "position": "bottom",
+      "margin-bottom": 0,
+      "modules-left": [
+        "cpu",
+        "cpu#freq",
+        "cpu#cores",
+        "custom/fanspeed",
+        "temperature",
+        "memory"
+        ],
+      "modules-center": [
+        "hyprland/workspaces"
+        ],
+      "modules-right": [
+        "network#speed",
+        "network",
+        "hyprland/language",
+        "tray",
+        "pulseaudio",
+        "battery",
+        "clock",
+        "custom/powermenu"
+      ],
+      "tray": {
+        "icon-size": 24,
+        "spacing": 10
+      },
+      "hyprland/workspaces": {
+        "tooltip": false,
+        "show-special": true,
+        "on-click": "activate",
+        "persistent-workspaces": {
+          "*": 4
+        },
+        "format": "{icon}",
+        "format-icons": {
+            "1": "1",
+            "2": "2",
+            "3": "3",
+            "4": "4",
+            "5": "5",
+            "6" : "6",
+            "7" : "7",
+            "8" : "8",
+            "9" : "9",
+            "10": "10",
+            "minimized": "M",
+            "default": ""
+        }
+      },
+      "hyprland/language": {
+        "format": "  {}",
+        "format-en": "US",
+        "format-cs": "CS"
+      },
+      "network": {
+        "format-icons": {
+          "wifi": ["󰖩"],
+          "ethernet": ["󰈀"],
+          "disconnected": ["󰖪"]
+        },
+        "format-wifi": "󰖩",
+        "format-ethernet": "󰈀",
+        "format-disconnected": "󰖪",
+        "tooltip-format": "{ifname} via {gwaddr}",
+        "tooltip-format-ethernet": "{ifnanme} {ipaddr} 󰈀",
+        "tooltip-format-disconnected": "Disconnected",
+        "tooltip": "true"
+      },
+      "network#speed": {
+        "format": "󰇚 {bandwidthDownBits} 󰕒 {bandwidthUpBits}",
+        "interval": 2,
+        "tooltip": "false"
+      },
+      "temperature": {
+        "format": "{icon} {temperatureC}°C",
+        "critical-threshold": 85,
+        "format-critical": "{temperatureC}°C ",
+        "format-icons": ["", "", ""],
+        "interval": 2
+      },
+      "memory": {
+        "format": "󰍛 {}%",
+        "tooltip": false
+      },
+      "cpu": {
+        "format": " {usage}%",
+        "tooltip": false,
+        "interval": 2
+      },
+      "cpu#freq": {
+        "format": "{avg_frequency} GHz",
+        "tooltip": false,
+        "interval": 2
+      },
+      "cpu#cores": {
+        "format": "{icon0} {icon1} {icon2} {icon3} {icon4} {icon5} {icon6} {icon7}",
+        "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
+        "interval": 2
+      },
+      "custom/fanspeed": {
+        "exec": "$HOME/.config/waybar/scripts/fan_speed.sh",
+        "format": "󰈐 {} RPM",
+        "interval": 5,
+        "return-type": "json"
+      },
+      "custom/notification": {
+        "tooltip": false,
+        "format": "{icon}",
+        "format-icons": {
+          "notification": "",
+          "none": " ",
+          "dnd-notification": "",
+          "dnd-none": " "
+        },
+        "return-type": "json",
+        "exec-if": "which swaync-client",
+        "exec": "swaync-client -swb",
+        "on-click": "swaync-client -t -sw",
+        "on-click-right": "swaync-client --close-all",
+        "escape": true
+      },
+      "custom/powermenu": {
+        "format": "",
+        "tooltip": false,
+        "on-click": "exec wlogout -p layer-shell"
+      },
+      "pulseaudio": {
+        "format": "{volume}% {icon}",
+        "format-bluetooth": "{volume}% {icon}",
+        "format-muted": "󰝟",
+        "format-icons": {
+            "headphone": "󰋋",
+            "hands-free": "󰥰",
+            "headset": "󰋎",
+            "phone": "",
+            "default": ["", ""]
+        },
+        "scroll-step": 5,
+        "on-click": "pavucontrol"
+      },
+      "clock": {
+        "format": "{:%H:%M}",
+        "interval": 60,
+        "tooltip": true,
+        "tooltip-format": "{:%d %B %H:%M}"
+      },
+      "battery": {
+        "states": {
+          "warning": 30,
+          "critical": 15
+        },
+        "interval": 60,
+        "format": "{icon} {capacity}%",
+        "format-charging": "󰂄 {capacity}%",
+        "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+        "format-time": "{H}h {M}m"
+      }
+  }
+

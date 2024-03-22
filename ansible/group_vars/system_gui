@@ -3,6 +3,31 @@ gui_core_packages:
   - ark
   - ocrmypdf
   - ffmpeg-free
+  - keepassxc
+  - adw-gtk3-theme
 
 gui_core_packages_rpm:
   - mediawriter
+
+hyprland_packages:
+  - waybar              # bar
+  - wofi                # launcher
+  - wlogout             # logout manager
+  - pavucontrol         # audio +- control
+  - dunst               # notification deamon
+  - wireplumber         # audio routing
+  - polkit              # authorization service
+  - polkit-kde          # gui for polkit
+  - copyq               # clipboard manager
+  - playerctl           # media player control
+  - blueman             # bluetooth manager
+  - thunar              # file manager
+  - brightnessctl       # screen brightness control
+  - swww                # wallpaper deamon
+  # TODO: screenshots... use flameshot once it releases new version with
+  # hyprland (and other wayland compositors) support. Hopefully it will manage
+  # to migrate to wayland successfully over time.
+  - grim
+  - slurp
+  - wl-clipboard
+  - jq

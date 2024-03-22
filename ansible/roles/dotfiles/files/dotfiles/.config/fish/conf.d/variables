@@ -1,0 +1,7 @@
+set gh ~/Documents/git/github
+set gl ~/Documents/git/gitlab
+set pg ~/Documents/git/pagure
+set dg ~/Documents/git/distgit
+set packit "$gh/packit"
+set copr "$gh/copr"
+set vercajk "$(vercajk path)"
