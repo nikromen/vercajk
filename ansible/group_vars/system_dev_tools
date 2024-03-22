@@ -30,3 +30,7 @@ base_prog_langs:
 
 weird_prog_langs:
   - haskell-platform
+
+python_dev_tools:
+  - python3-devel
+  - krb5-devel

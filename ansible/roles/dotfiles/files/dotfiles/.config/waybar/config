@@ -1,0 +1,169 @@
+{
+    "layer": "top",
+      "position": "bottom",
+      "margin-bottom": 0,
+      "modules-left": [
+        "cpu",
+        "cpu#freq",
+        "cpu#cores",
+        "custom/fanspeed",
+        "temperature",
+        "memory",
+        "hyprland/workspaces"
+        ],
+      "modules-center": [
+        "hyprland/window"
+        ],
+      "modules-right": [
+        "network#speed",
+        "network",
+        "tray",
+        "pulseaudio",
+        "battery",
+        "clock",
+        "custom/powermenu"
+      ],
+      "tray": {
+        "icon-size": 24,
+        "spacing": 10
+      },
+      "hyprland/window": {
+        "format": " {}",
+        "rewrite": {
+            "(\\d\\. )?(.*) - Chromium": "<span color=\"#4285F4\"></span>  $2 ",
+            "(\\d\\. )?(.*) — Mozilla Firefox": "<span color=\"#4285F4\">󰈹</span>  $2 ",
+            "vim (.*)": "<span color=\"#57A143\"></span>  $1",
+            "vim": "<span color=\"#57A143\">  </span> ",
+            "nvim (.*)": "<span color=\"#57A143\"></span>  $1",
+            "nvim": "<span color=\"#57A143\">  </span> ",
+            "vi (.*)": "<span color=\"#57A143\"></span>  $1",
+            "vi": "<span color=\"#57A143\">  </span> ",
+            "alacritty (.*)": "<span color=\"#ffffff\"></span>  $1",
+            "kitty (.*)": "<span color=\"#ffffff\"></span>  $1",
+            "Search(.*)": "<span color=\"#a855f7\"></span>  Search$1"
+        },
+        "separate-outputs": false
+      },
+      "hyprland/workspaces": {
+        "format": "{icon}",
+        "tooltip": "false",
+        "format-icons": {
+          "1": "󰲡",
+          "2": "󰲣",
+          "3": "󰲥",
+          "4": "󰲧",
+          "5": "󰲩",
+          "6": "󰲫",
+          "7": "󰲭",
+          "8": "󰲯",
+          "9": "󰲱",
+          "10": "󰿭",
+          "active": "",
+          "default": ""
+        }
+      },
+      "network": {
+        "format-icons": {
+          "wifi": ["󰖩"],
+          "ethernet": ["󰈀"],
+          "disconnected": ["󰖪"]
+        },
+        "format-wifi": "󰖩",
+        "format-ethernet": "󰈀",
+        "format-disconnected": "󰖪",
+        "tooltip-format": "{ifname} via {gwaddr}",
+        "tooltip-format-ethernet": "{ifnanme} {ipaddr} 󰈀",
+        "tooltip-format-disconnected": "Disconnected",
+        "tooltip": "true"
+      },
+      "network#speed": {
+        "format": "󰇚 {bandwidthDownBits} 󰕒 {bandwidthUpBits}",
+        "interval": 2,
+        "tooltip": "false"
+      },
+      "temperature": {
+        "format": "{icon} {temperatureC}°C",
+        "critical-threshold": 85,
+        "format-critical": "{temperatureC}°C ",
+        "format-icons": ["", "", ""],
+        "interval": 2
+      },
+      "memory": {
+        "format": "󰍛 {}%",
+        "tooltip": "false"
+      },
+      "cpu": {
+        "format": " {usage}%",
+        "tooltip": "false",
+        "interval": 2
+      },
+      "cpu#freq": {
+        "format": "{avg_frequency} GHz",
+        "tooltip": "false",
+        "interval": 2
+      },
+      "cpu#cores": {
+        "format": "{icon0} {icon1} {icon2} {icon3} {icon4} {icon5} {icon6} {icon7}",
+        "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
+        "interval": 2
+      },
+      "custom/fanspeed": {
+        "exec": "$HOME/.config/waybar/scripts/fan_speed.sh",
+        "format": "󰈐 {} RPM",
+        "interval": 5,
+        "return-type": "json"
+      },
+      "custom/notification": {
+        "tooltip": false,
+        "format": "{icon}",
+        "format-icons": {
+          "notification": "",
+          "none": " ",
+          "dnd-notification": "",
+          "dnd-none": " "
+        },
+        "return-type": "json",
+        "exec-if": "which swaync-client",
+        "exec": "swaync-client -swb",
+        "on-click": "swaync-client -t -sw",
+        "on-click-right": "swaync-client --close-all",
+        "escape": true
+      },
+      "custom/powermenu": {
+        "format": "",
+        "tooltip": false,
+        "on-click": "exec wlogout -p layer-shell"
+      },
+      "pulseaudio": {
+        "format": "{volume}% {icon}",
+        "format-bluetooth": "{volume}% {icon}",
+        "format-muted": "󰝟",
+        "format-icons": {
+            "headphone": "󰋋",
+            "hands-free": "󰥰",
+            "headset": "󰋎",
+            "phone": "",
+            "default": ["", ""]
+        },
+        "scroll-step": 5,
+        "on-click": "pavucontrol"
+      },
+      "clock": {
+        "format": "{:%H:%M}",
+        "interval": 60,
+        "tooltip": true,
+        "tooltip-format": "{:%d %B %H:%M}"
+      },
+      "battery": {
+        "states": {
+          "warning": 30,
+          "critical": 15
+        },
+        "interval": 60,
+        "format": "{icon} {capacity}%",
+        "format-charging": "󰂄 {capacity}%",
+        "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+        "format-time": "{H}h {M}m"
+      }
+  }
+  
