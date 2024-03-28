@@ -10,7 +10,7 @@
     state: present
 
 - name: Check if exec vim works
-  command: 
+  command:
     cmd: "vim --version"
   register: vim_output
   changed_when: false

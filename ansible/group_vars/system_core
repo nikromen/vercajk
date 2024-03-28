@@ -14,6 +14,8 @@ core_packages:
   - allacritty
   - fzf
   - btop
+  - tree
+  - stow
 
 locales:
   - LC_ADDRESS=cs_CZ.UTF-8

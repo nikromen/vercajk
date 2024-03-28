@@ -8,7 +8,7 @@
   package:
     name: "{{ item }}"
     state: present
-  with_items: 
+  with_items:
     - "{{ hyprland_packages }}"
 
 - name: Enable copr repo for hyprland packages

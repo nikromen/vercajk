@@ -8,4 +8,3 @@ done
 
 avg=$((total / count))
 echo "{\"text\": \"${avg}\"}"
-

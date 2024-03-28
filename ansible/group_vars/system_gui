@@ -15,8 +15,11 @@ hyprland_packages:
   - pavucontrol         # audio +- control
   - dunst               # notification deamon
   - wireplumber         # audio routing
-  - polkit              # authorization
+  - polkit              # authorization service
+  - polkit-kde          # gui for polkit
   - copyq               # clipboard manager
   - playerctl           # media player control
   - blueman             # bluetooth manager
   - thunar              # file manager
+  - brightnessctl       # screen brightness control
+  - swww                # wallpaper deamon
