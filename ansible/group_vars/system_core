@@ -29,3 +29,11 @@ locales:
 browsers:
   - firefox
   - chromium
+
+
+notas:
+https://discussion.fedoraproject.org/t/installing-intel-media-driver-and-gstreamer-vaapi/91131
+  - core
+
+fingerprint:
+  - fprintd

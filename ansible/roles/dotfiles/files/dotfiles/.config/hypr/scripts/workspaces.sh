@@ -43,7 +43,6 @@ new() {
 
 move() {
     if [ -z "$WORKSPACE_EXISTS" ]; then
-        echo dva
         new
     fi
 
