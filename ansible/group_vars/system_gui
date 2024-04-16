@@ -10,6 +10,7 @@ gui_core_packages_rpm:
   - mediawriter
 
 hyprland_packages:
+  - hyprland-devel      # for plugins
   - waybar              # bar
   - wofi                # launcher
   - wlogout             # logout manager

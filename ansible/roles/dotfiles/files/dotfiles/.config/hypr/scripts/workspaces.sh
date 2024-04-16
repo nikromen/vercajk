@@ -11,6 +11,7 @@ usage() {
         -h, --help      Display this message.
         -n, --new       Create a new workspace.
         -m, --move      Move to an existing workspace.
+        -r, --refresh   Refresh the workspaces with monitors.
     "
 }
 
@@ -25,29 +26,39 @@ if [ -z "$2" ]; then
 fi
 
 WORKSPACE_NUMBER=$2
-ACTIVE_WORKSPACE=$(hyprctl -j activeworkspace | jq -r '.name')
-MONITOR_LETTER=$(echo $ACTIVE_WORKSPACE | sed 's/.*\([a-z]\)$/\1/')
-NEW_WORKSPACE_NAME="${WORKSPACE_NUMBER}${MONITOR_LETTER}"
-WORKSPACE_EXISTS=$(hyprctl -j workspaces | jq -r ".[] | select(.name == \"$NEW_WORKSPACE_NAME\") | .name")
+ACTIVE_MONITOR_NAME=$(hyprctl -j monitors | jq -r ".[] | select(.focused == true) | .name")
+EXISTING_WORKSPACE_ID=$(hyprctl -j workspaces | jq -r ".[] | select(.monitor == \"$ACTIVE_MONITOR_NAME\" and .name == \"$WORKSPACE_NUMBER\") | .id")
+
 
 new() {
-    if [ -n "$WORKSPACE_EXISTS" ]; then
-        hyprctl dispatch workspace $NEW_WORKSPACE_NAME
+    if [ -n "$EXISTING_WORKSPACE_ID" ]; then
+        hyprctl dispatch workspace $EXISTING_WORKSPACE_ID
         exit 0
     fi
 
     hyprctl dispatch workspace empty
     local id=$(hyprctl -j activeworkspace | jq -r '.id')
-    hyprctl dispatch renameworkspace $id $NEW_WORKSPACE_NAME
+    hyprctl dispatch renameworkspace $id $WORKSPACE_NUMBER
+    echo $id
 }
 
 move() {
-    if [ -z "$WORKSPACE_EXISTS" ]; then
-        new
+    local id=
+    local active_window=
+    local active_workspace=$(hyprctl -j activeworkspace | jq -r ".id")
+    if [ -z "$EXISTING_WORKSPACE_ID" ]; then
+        active_window=$(hyprctl -j activewindow | jq -r ".address")
+        id=$(new)
+    else
+        id=$EXISTING_WORKSPACE_ID
     fi
 
-    hyprctl dispatch workspace $ACTIVE_WORKSPACE
-    hyprctl dispatch movetoworkspace $NEW_WORKSPACE_NAME
+    if [ -n "$active_window" ]; then
+        hyprctl dispatch movetoworkspace $active_workspace,$active_window
+    else
+        hyprctl dispatch workspace $active_workspace
+        hyprctl dispatch movetoworkspace $id
+    fi
 }
 
 
@@ -61,6 +72,9 @@ case $1 in
         ;;
     -m|--move)
         move
+        ;;
+    -r|--refresh)
+        refresh
         ;;
     *)
         usage
