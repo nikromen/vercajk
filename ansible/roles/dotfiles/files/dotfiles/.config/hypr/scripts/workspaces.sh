@@ -53,7 +53,6 @@ new() {
 
     if [ -n "$WORKSPACE_ID" ]; then
         hyprctl dispatch workspace $WORKSPACE_ID
-        echo "ahoj"
         exit 0
     fi
 
@@ -66,15 +65,16 @@ new() {
 move() {
     _prep $@
     if [ -z "$WORKSPACE_ID" ]; then
-        local last_workspace_id=$(hyprctl -j workspaces | jq -r ".[] | select(.monitor == \"$ACTIVE_MONITOR_NAME\") | .id" | sort | tail -n 1)
+        local last_workspace_id=$(hyprctl -j workspaces | jq -r ".[] | select(.monitor == \"$ACTIVE_MONITOR_NAME\") | .id" | sort -r -t _ -g | head -n 1)
         id=$((last_workspace_id + 1))
+        echo $id
     else
         id=$WORKSPACE_ID
     fi
 
     hyprctl dispatch movetoworkspace $id
     if [ -z "$WORKSPACE_ID" ]; then
-        $HOME/.config/hypr/scripts/workspaces.sh -r
+        hyprctl dispatch renameworkspace $id $NEW_WORKSPACE_NAME
     fi
 }
 
