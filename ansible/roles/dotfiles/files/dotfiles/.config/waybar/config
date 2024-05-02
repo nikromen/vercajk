@@ -15,7 +15,6 @@
         ],
       "modules-right": [
         "network#speed",
-        "network",
         "hyprland/language",
         "tray",
         "pulseaudio",
@@ -78,20 +77,6 @@
         "format": "  {}",
         "format-en": "US",
         "format-cs": "CS"
-      },
-      "network": {
-        "format-icons": {
-          "wifi": ["󰖩"],
-          "ethernet": ["󰈀"],
-          "disconnected": ["󰖪"]
-        },
-        "format-wifi": "󰖩",
-        "format-ethernet": "󰈀",
-        "format-disconnected": "󰖪",
-        "tooltip-format": "{ifname} via {gwaddr}",
-        "tooltip-format-ethernet": "{ifnanme} {ipaddr} 󰈀",
-        "tooltip-format-disconnected": "Disconnected",
-        "tooltip": "true"
       },
       "network#speed": {
         "format": "󰇚 {bandwidthDownBits} 󰕒 {bandwidthUpBits}",

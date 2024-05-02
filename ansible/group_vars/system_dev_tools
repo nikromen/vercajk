@@ -3,6 +3,7 @@ container_packages:
   - podman
   - buildah
   - podman-compose
+  - podman-docker
 
 dev_apps:
   - valgrind
