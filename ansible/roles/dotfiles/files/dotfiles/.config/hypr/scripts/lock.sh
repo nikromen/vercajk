@@ -2,6 +2,6 @@
 
 # deal with stupid workspaces
 
-hyprlock  # so hyprlock is called only once
+hyprlock
 $HOME/.config/hypr/scripts/workspaces.sh --refresh
 killall waybar && waybar

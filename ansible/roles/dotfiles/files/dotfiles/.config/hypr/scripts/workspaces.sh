@@ -21,36 +21,58 @@ if [ -z "$1" ]; then
 fi
 
 
-MONITOR_LETTERS=("a" "b" "c" "d" "e" "f")
-
-
 refresh() {
     local workspaces=$(hyprctl -j workspaces)
-    local monitors=$(hyprctl -j monitors | jq -r '.[].name')
-    local monitor_count=0
-    for monitor in $monitors; do
-        local monitor_workspaces=$(echo $workspaces | jq -r ".[] | select(.monitor == \"$monitor\") | .id" | sort)
+    local monitors=$(hyprctl -j monitors | jq -r ".[].id")
+
+    local is_zero_monitor=false
+    if [[ $monitors == *"0"* ]]; then
+        is_zero_monitor=true
+    fi
+
+    for monitorID in $monitors; do
+        local monitor_workspacesID=$(echo $workspaces | jq -r ".[] | select(.monitorID == $monitorID and (.name | startswith(\"special:\") | not)) | .id" | sort)
         local i=1
-        for workspace_id in $monitor_workspaces; do
-            hyprctl dispatch renameworkspace $workspace_id $i${MONITOR_LETTERS[$monitor_count]}
+
+        if ! $is_zero_monitor; then
+            monitorID=$((monitorID - 1))
+        fi
+
+        for workspace_id in $monitor_workspacesID; do
+            if [[ $monitorID -eq 0 ]]; then
+                monitorID=""
+            fi
+
+            hyprctl dispatch renameworkspace $workspace_id ${monitorID}${i}
             i=$((i + 1))
         done
-        monitor_count=$((monitor_count + 1))
     done
 }
 
 _prep() {
-    WORKSPACE_NUMBER=$2
-    ACTIVE_MONITOR_NAME=$(hyprctl -j monitors | jq -r ".[] | select(.focused == true) | .name")
-    ACTIVE_WORKSPACE=$(hyprctl -j activeworkspace | jq -r '.name')
-    MONITOR_LETTER=$(echo $ACTIVE_WORKSPACE | sed 's/.*\([a-z]\)$/\1/')
-    NEW_WORKSPACE_NAME=$WORKSPACE_NUMBER$MONITOR_LETTER
-    WORKSPACE_ID=$(hyprctl -j workspaces | jq -r ".[] | select(.monitor == \"$ACTIVE_MONITOR_NAME\" and .name == \"$NEW_WORKSPACE_NAME\") | .id")
+    local monitors=$(hyprctl -j monitors)
+    ACTIVE_MONITOR_ID=$(echo $monitors | jq -r ".[] | select(.focused == true) | .id")
+    local monitors_ids=$(echo $monitors | jq -r ".[].id")
+    local shifted_monitor_id=$ACTIVE_MONITOR_ID
+    if [[ $monitors_ids != *"0"* ]]; then
+        shifted_monitor_id=$((ACTIVE_MONITOR_ID - 1))
+    fi
+
+    if [[ $shifted_monitor_id -eq 0 ]]; then
+        shifted_monitor_id=""
+    fi
+
+    local workspace_number=$2
+    NEW_WORKSPACE_NAME="${shifted_monitor_id}${workspace_number}"
+    echo "New workspace name: $NEW_WORKSPACE_NAME"
+    WORKSPACES=$(hyprctl -j workspaces)
+    WORKSPACE_ID=$(echo "$WORKSPACES" | jq -r ".[] | select(.name == \"$NEW_WORKSPACE_NAME\" and .monitorID == $ACTIVE_MONITOR_ID) | .id")
 }
 
 new() {
     _prep $@
 
+    # go to existing workspace
     if [ -n "$WORKSPACE_ID" ]; then
         hyprctl dispatch workspace $WORKSPACE_ID
         exit 0
@@ -59,15 +81,15 @@ new() {
     hyprctl dispatch workspace empty
     local new_workspace_id=$(hyprctl -j activeworkspace | jq -r '.id')
     hyprctl dispatch renameworkspace $new_workspace_id $NEW_WORKSPACE_NAME
-    echo $new_workspace_id
 }
 
 move() {
     _prep $@
+
     if [ -z "$WORKSPACE_ID" ]; then
-        local last_workspace_id=$(hyprctl -j workspaces | jq -r ".[] | select(.monitor == \"$ACTIVE_MONITOR_NAME\") | .id" | sort -r -t _ -g | head -n 1)
+        # move to new workspace
+        local last_workspace_id=$(echo $WORKSPACES | jq -r ".[] | select(.monitorID == $ACTIVE_MONITOR_ID) | .id" | sort -r -t _ -g | head -n 1)
         id=$((last_workspace_id + 1))
-        echo $id
     else
         id=$WORKSPACE_ID
     fi
