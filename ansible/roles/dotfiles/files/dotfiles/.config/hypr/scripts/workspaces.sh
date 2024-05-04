@@ -69,6 +69,11 @@ _prep() {
     WORKSPACE_ID=$(echo "$WORKSPACES" | jq -r ".[] | select(.name == \"$NEW_WORKSPACE_NAME\" and .monitorID == $ACTIVE_MONITOR_ID) | .id")
 }
 
+_properly_rename_new_workspace() {
+    local new_workspace_id=$(hyprctl -j activeworkspace | jq -r ".id")
+    hyprctl dispatch renameworkspace $new_workspace_id $NEW_WORKSPACE_NAME
+}
+
 new() {
     _prep $@
 
@@ -79,24 +84,17 @@ new() {
     fi
 
     hyprctl dispatch workspace empty
-    local new_workspace_id=$(hyprctl -j activeworkspace | jq -r '.id')
-    hyprctl dispatch renameworkspace $new_workspace_id $NEW_WORKSPACE_NAME
+    _properly_rename_new_workspace
 }
 
 move() {
     _prep $@
 
     if [ -z "$WORKSPACE_ID" ]; then
-        # move to new workspace
-        local last_workspace_id=$(echo $WORKSPACES | jq -r ".[] | select(.monitorID == $ACTIVE_MONITOR_ID) | .id" | sort -r -t _ -g | head -n 1)
-        id=$((last_workspace_id + 1))
+        hyprctl dispatch movetoworkspace empty
+        _properly_rename_new_workspace
     else
-        id=$WORKSPACE_ID
-    fi
-
-    hyprctl dispatch movetoworkspace $id
-    if [ -z "$WORKSPACE_ID" ]; then
-        hyprctl dispatch renameworkspace $id $NEW_WORKSPACE_NAME
+        hyprctl dispatch movetoworkspace $WORKSPACE_ID
     fi
 }
 

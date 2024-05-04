@@ -34,6 +34,7 @@
 }
 
 #custom-powermenu,
+#custom-notification,
 #cpu,
 #temperature,
 #memory,
@@ -54,6 +55,10 @@
 #custom-powermenu {
   color: #e06c75;
   margin-right: 8px;
+}
+
+#custom-notification {
+  color: #e5c07b;
 }
 
 #network {
