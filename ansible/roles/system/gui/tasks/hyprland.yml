@@ -13,7 +13,12 @@
 
 - name: Enable copr repo for hyprland packages
   community.general.copr:
-    name: nikropmen/hyprland
+    name: solopasha/hyprland
+    state: enabled
+
+- name: Enable copr repo for swaync
+  community.general.copr:
+    name: erikreider/SwayNotificationCenter
     state: enabled
 
 - name: Install packages that are not yet in fedora repo
@@ -22,3 +27,6 @@
     state: present
   with_items:
     - hyprlock
+    - hypridle
+    - SwayNotificationCenter
+    - SwayNotificationCenter-fish-completion
