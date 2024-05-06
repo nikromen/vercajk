@@ -64,7 +64,6 @@ _prep() {
 
     local workspace_number=$2
     NEW_WORKSPACE_NAME="${shifted_monitor_id}${workspace_number}"
-    echo "New workspace name: $NEW_WORKSPACE_NAME"
     WORKSPACES=$(hyprctl -j workspaces)
     WORKSPACE_ID=$(echo "$WORKSPACES" | jq -r ".[] | select(.name == \"$NEW_WORKSPACE_NAME\" and .monitorID == $ACTIVE_MONITOR_ID) | .id")
 }
@@ -74,16 +73,26 @@ _properly_rename_new_workspace() {
     hyprctl dispatch renameworkspace $new_workspace_id $NEW_WORKSPACE_NAME
 }
 
+_calculate_r_to_empty_worspace() {
+    local last_workspace_id=$(echo $WORKSPACES | jq -r ".[] | select(.id >= 0 and .monitorID == $ACTIVE_MONITOR_ID) | .id" | sort -n | tail -n 1)
+    local active_workspace_id=$(hyprctl -j activeworkspace | jq -r ".id")
+    if [ $last_workspace_id -ge $active_workspace_id ]; then
+        echo $(($last_workspace_id - $active_workspace_id + 1))
+    else
+        echo $(($active_workspace_id + $last_workspace_id + 1))
+    fi
+}
+
 new() {
     _prep $@
-
     # go to existing workspace
     if [ -n "$WORKSPACE_ID" ]; then
         hyprctl dispatch workspace $WORKSPACE_ID
         exit 0
     fi
 
-    hyprctl dispatch workspace empty
+    echo "dispatch workspace r+$(_calculate_r_to_empty_worspace)"
+    hyprctl dispatch workspace r+$(_calculate_r_to_empty_worspace)
     _properly_rename_new_workspace
 }
 
@@ -91,7 +100,7 @@ move() {
     _prep $@
 
     if [ -z "$WORKSPACE_ID" ]; then
-        hyprctl dispatch movetoworkspace empty
+        hyprctl dispatch movetoworkspace r+$(_calculate_r_to_empty_worspace)
         _properly_rename_new_workspace
     else
         hyprctl dispatch movetoworkspace $WORKSPACE_ID

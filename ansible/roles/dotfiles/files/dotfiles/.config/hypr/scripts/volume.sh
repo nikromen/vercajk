@@ -47,12 +47,20 @@ _notify() {
     fi
 }
 
+_ummute_if_needed() {
+    if [ "$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | grep -o "MUTED")" ]; then
+        wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+    fi
+}
+
 case $1 in
     up)
+        _ummute_if_needed
         wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+
         _notify
         ;;
     down)
+        _ummute_if_needed
         wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
         _notify
         ;;

@@ -15,7 +15,6 @@ hyprland_packages:
   - wofi                # launcher
   - wlogout             # logout manager
   - pavucontrol         # audio +- control
-  - dunst               # notification deamon
   - wireplumber         # audio routing
   - polkit              # authorization service
   - polkit-kde          # gui for polkit
