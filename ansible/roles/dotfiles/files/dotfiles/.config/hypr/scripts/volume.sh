@@ -41,7 +41,7 @@ _icon() {
 _notify() {
     local volume=$(get)
     notify-send -e -h string:x-canonical-private-synchronous:volume_notify -h int:value:$volume -u low -i "$(_icon $volume)" "$volume%"
-    
+
     if [ $volume != 0 ]; then
         pw-cat --playback $HOME/.config/hypr/stereo/bell.oga
     fi

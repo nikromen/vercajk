@@ -19,3 +19,7 @@ end
 if test $HOME/.config/fish/functions/call_in_bash_scripts.fish
     source $HOME/.config/fish/functions/call_in_bash_scripts.fish
 end
+
+# bun
+set --export BUN_INSTALL "$HOME/.bun"
+set --export PATH $BUN_INSTALL/bin $PATH

@@ -35,3 +35,5 @@ weird_prog_langs:
 python_dev_tools:
   - python3-devel
   - krb5-devel
+  - poetry
+  - pipenv

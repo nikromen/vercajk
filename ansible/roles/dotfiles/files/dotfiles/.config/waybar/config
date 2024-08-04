@@ -8,14 +8,14 @@
         "cpu#cores",
         "custom/fanspeed",
         "temperature",
-        "memory"
+        "memory",
+        "network#speed"
         ],
       "modules-center": [
         "hyprland/workspaces"
         ],
       "modules-right": [
         "custom/notification",
-        "network#speed",
         "hyprland/language",
         "tray",
         "pulseaudio",
@@ -106,7 +106,7 @@
         "interval": 2
       },
       "cpu#cores": {
-        "format": "{icon0} {icon1} {icon2} {icon3} {icon4} {icon5} {icon6} {icon7}",
+        "format": "{icon0} {icon1} {icon2} {icon3}",
         "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
         "interval": 2
       },
@@ -173,4 +173,3 @@
         "format-time": "{H}h {M}m"
       }
   }
-

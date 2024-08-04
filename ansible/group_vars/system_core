@@ -10,12 +10,14 @@ core_packages:
   - openvpn
   - cmake
   - make
-  - kitty
   - allacritty
   - fzf
   - btop
   - tree
   - stow
+  - tmux
+  - util-linux
+  - zoxide
 
 locales:
   - LC_ADDRESS=cs_CZ.UTF-8

@@ -11,7 +11,6 @@ gui_core_packages_rpm:
 
 hyprland_packages:
   - hyprland-devel      # for plugins
-  - waybar              # bar
   - wofi                # launcher
   - wlogout             # logout manager
   - pavucontrol         # audio +- control
@@ -29,3 +28,6 @@ hyprland_packages:
   - wl-clipboard        # clipboard manager for wayland
   - jq                  # json processor for my scripts
   - bc                  # calculator for my scripts
+  # bars
+  - aylurs-gtk-shell    # widgets
+  - waybar              # static bar

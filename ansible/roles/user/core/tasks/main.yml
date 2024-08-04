@@ -10,3 +10,6 @@
 
 - name: Clone and install vercajk git repo
   import_tasks: vercajk.yml
+
+- name: Setup tmux
+  import_tasks: tmux.yml
