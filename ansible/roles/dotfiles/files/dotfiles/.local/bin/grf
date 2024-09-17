@@ -1,16 +1,50 @@
 #!/bin/bash
 
+
+set -e
+
 usage() {
     echo "Usage: $0 COUNT
 
         Autofixup the last COUNT commits.
 
     COUNT: How many commits to fixup from HEAD. Default is 1.
+
+    Options:
+        -h, --help: Show this help message and exit.
+        -a, --autocommit: Automatically commit staged changes before fixing up.
     "
 }
 
 main() {
-    local count=${1:-1}
+    while [ $# -gt 0 ]; do
+        case $1 in
+            -h|--help)
+                usage
+                exit 0
+                ;;
+            -a|--autocommit)
+                git commit -m "Autocommit before fixup"
+                ;;
+            *)
+                break
+                ;;
+        esac
+        shift
+    done
+
+    if [ $# -gt 1 ]; then
+        usage
+        exit 1
+    fi
+
+    local count
+    if [ $# -eq 0 ]; then
+        count=1
+    else
+        count=$1
+    fi
+
     git reset --soft HEAD~$count
     git commit --amend --no-edit
 }

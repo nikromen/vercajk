@@ -24,6 +24,8 @@ alias gri="git rebase -i"
 alias grc="git rebase --continue"
 alias gra="git rebase --abort"
 
+alias grf1="grf --autocommit 1"
+
 alias df="df -h"
 alias ls="ls -lha --color=auto"
 
