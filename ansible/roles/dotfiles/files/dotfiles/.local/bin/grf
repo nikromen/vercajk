@@ -48,3 +48,5 @@ main() {
     git reset --soft HEAD~$count
     git commit --amend --no-edit
 }
+
+main "$@"
