@@ -1,0 +1,16 @@
+#!/bin/bash
+
+usage() {
+    echo "Usage: $0 COUNT
+
+        Autofixup the last COUNT commits.
+
+    COUNT: How many commits to fixup from HEAD. Default is 1.
+    "
+}
+
+main() {
+    local count=${1:-1}
+    git reset --soft HEAD~$count
+    git commit --amend --no-edit
+}
