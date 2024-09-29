@@ -1,54 +1,139 @@
 #!/bin/bash
 
 
-set -e
+# I hope this will get better through the years without need of this long script
+
+
+theme_dark="Breeze-Dark"
+theme_light="Breeze"
+icon_light="breeze"
+icon_dark="breeze-dark"
+scheme_light="BreezeLight"
+scheme_dark="BreezeDark"
+
 
 usage() {
-    echo "Usage: $0 [OPTIONS] THEME
+    echo "Usage: $0 [OPTIONS] COMMAND [ARGS]...
     Options:
         -h, --help      Show this help message and exit
-        -l, --list      List available themes
+        -t, --theme     Only themes
+        -i, --icon      Only icons
+        -s, --scheme    Only color schemes
+    Commands:
+        list            List available themes/icons/schemes
+        set             Set theme/icon/scheme
     "
 }
 
 
-list_themes() {
-    echo "Available themes:"
-    for theme in /usr/share/themes/*; do
-        echo "$(basename $theme)"
+list_usage() {
+    echo "Usage: $0 list [OPTIONS]
+    Options:
+        -h, --help      Show this help message and exit
+    "
+}
+
+
+theme_usage() {
+    echo "Usage: $0 theme [OPTIONS] THEME
+    Options:
+        -h, --help      Show this help message and exit
+    THEME:
+        default-dark    Set default dark theme
+        default-light   Set default light theme
+        THEME           Set custom theme
+    "
+}
+
+
+list() {
+    local what=$1
+    echo "Available $what:"
+    for item in /usr/share/$what/*; do
+        echo "$(basename $item)"
     done
 }
 
 
-set_theme() {
-    if [ -z "$1" ]; then
-        echo "No theme specified"
-        exit 1
+set_gtk_theme() {
+    local what=$1
+    local theme=$2
+    local interface
+    if [ "$what" == "theme" ]; then
+        interface="gtk-theme"
+    elif [ "$what" == "icon" ]; then
+        interface="icon-theme"
+    elif [ "$what" == "scheme" ]; then
+        interface="color-scheme"
+        if [[ $theme =~ [Ll]ight ]]; then
+            theme="prefer-light"
+        else
+            theme="prefer-dark"
     fi
 
-    if [ ! -d "/usr/share/themes/$1" ]; then
-        echo "Theme $1 not found"
-        exit 1
-    fi
-
-    gsettings set org.gnome.desktop.interface gtk-theme "$1"
+    gsettings set org.gnome.desktop.interface $interface $theme
 }
 
 
-while [ "$1" != "" ]; do
-    case $1 in
-        -h | --help )
-            usage
-            exit
-            ;;
-        -l | --list )
-            list_themes
-            exit
-            ;;
-        * )
-            set_theme $1
-            exit
-            ;;
-    esac
-    shift
-done
+set_kde_theme() {
+    # thanks KDE that I have to do this for you specifically...
+    local what=$1
+    local theme=$2
+    if [ "$what" == "theme" && "$XDG_CURRENT_DESKTOP" == "KDE" ]; then
+        plasma-apply-desktoptheme "$theme"
+    elif [ "$what" == "icon" ]; then
+        local changeicons=$(find /usr -name "plasma-changeicons")
+        $changeicons "$theme"
+    elif [ "$what" == "scheme" ]; then
+        plasma-apply-colorscheme "$theme"
+    fi
+}
+
+
+set_theme() {
+    if command -v gsettings &> /dev/null; then
+        set_gtk_theme $1
+    else
+        echo "gsettings not found, skipping for gtk"
+    fi
+
+    if  command -v plasma-apply-colorscheme &> /dev/null; then
+        set_kde_theme $1
+    else
+        echo "plasma-apply-colorscheme not found, skipping for KDE"
+    fi
+
+    # set kvantum theme and check if it's installed
+    if command -v kvantum &> /dev/null; then
+        kvantummanager --set "$1"
+    else
+        echo "Kvantum not found, skipping for QT, you can use qt6ct manually"
+    fi
+}
+
+
+main() {
+    local theme=false
+    local icon=false
+    local scheme=false
+    while [ "$1" != "" ]; do
+        case $1 in
+            -h | --help )
+                usage
+                exit
+                ;;
+            -t | --theme )
+                theme=true
+                ;;
+            -i | --icon )
+                icon=true
+                ;;
+            -s | --scheme )
+                scheme=true
+                ;;
+            list )
+
+        esac
+        shift
+    done
+}

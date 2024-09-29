@@ -1,21 +1,44 @@
 ---
 flatpak_core:
-  - com.obsproject.Studio
   - com.discordapp.Discord
   - org.signal.Signal
   - org.telegram.desktop
   - com.bitwarden.desktop
+  - org.keepassxc.KeePassXC
+  # element
   - im.riot.Riot
-  - org.gimp.GIMP
+  - com.sindresorhus.Caprine
+  - com.github.tchx84.Flatseal
+  - org.gnome.Firmware
 
 flatpak_multimedia:
   - org.videolan.VLC
   - com.spotify.Client
+  - com.obsproject.Studio
+  - org.gimp.GIMP
+  - com.spotify.Client
+  - tv.kodi.Kodi
+  - org.kde.gwenview
+  - org.kde.okular
+  - org.kde.kdenlive
 
 flatpak_dev:
   - rest.insomnia.Insomnia
   - org.filezillaproject.Filezilla
+  - io.podman_desktop.PodmanDesktop
+  - io.qt.Designer
+  - io.qt.QtCreator
+  - com.jgraph.drawio.desktop
+  - io.gitlab.adhami3310.Impression
 
 flatpak_games:
   - com.valvesoftware.Steam
   - com.play0ad.zeroad
+
+flatpak_productivity:
+  - org.libreoffice.libreoffice
+  - org.mozilla.Thunderbird
+  - net.cozic.joplin_desktop
+
+flatpak_browsers:
+  - io.github.ungoogled_software.ungoogled_chromium

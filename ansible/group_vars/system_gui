@@ -3,7 +3,6 @@ gui_core_packages:
   - ark
   - ocrmypdf
   - ffmpeg-free
-  - keepassxc
   - adw-gtk3-theme
 
 gui_core_packages_rpm:
@@ -19,7 +18,7 @@ hyprland_packages:
   - copyq               # clipboard manager
   - playerctl           # media player control
   - blueman             # bluetooth manager
-  - thunar              # file manager
+  - dolphin             # file manager
   - brightnessctl       # screen brightness control
   - flameshot           # screenshot tool
   # TODO: do I need this when I have copyq?

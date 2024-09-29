@@ -10,3 +10,5 @@
     autoStash = true
 [alias]
     adog = log --all --decorate --oneline --graph
+[init]
+	defaultBranch = main
