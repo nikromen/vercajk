@@ -16,8 +16,7 @@ usage() {
     "
 }
 
-DOCKER_HOST='DOCKER_HOST=unix:///run/user/${UID}/podman/podman.sock'
-CONF_FILE="$HOME/.config/bash/conf"
+DOCKER_HOST='DOCKER_HOST=unix://${XDG_RUNTIME_DIR}/podman/podman.sock'
 DOCKER_HOST_FILE="$HOME/.config/bash/.docker_host"
 
 clear_docker_host() {
@@ -31,10 +30,9 @@ clear_docker_host() {
 
 select_podman() {
     clear_docker_host
-    echo "export $BASH_DOCKER_HOST" >> "$DOCKER_HOST_FILE"
-    sudo systemctl start podman.socket
-    sudo systemctl enable podman.socket
-    local check_podman_socket=$(sudo curl -H "Content-Type: application/json" --unix-socket /var/run/docker.sock http://localhost/_ping)
+    echo "export $DOCKER_HOST" >> "$DOCKER_HOST_FILE"
+    systemctl --user enable --now podman.socket
+    local check_podman_socket=$(curl -H "Content-Type: application/json" --unix-socket ${XDG_RUNTIME_DIR}/podman/podman.sock http://localhost/_ping)
     if [ "$check_podman_socket" != "OK" ]; then
         echo "Failed to start podman.socket, please do it manually" >&2
         exit 1
@@ -43,8 +41,8 @@ select_podman() {
 
 select_docker() {
     clear_docker_host
-    sudo systemctl stop podman.socket
-    sudo systemctl disable podman.socket
+    systemctl --user stop podman.socket
+    systemctl --user disable podman.socket
 }
 
 main() {

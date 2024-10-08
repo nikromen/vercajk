@@ -24,6 +24,7 @@ main() {
                 exit 0
                 ;;
             -a|--autocommit)
+                echo "Autocommitting staged changes..."
                 git commit -m "Autocommit before fixup"
                 ;;
             *)
@@ -45,6 +46,7 @@ main() {
         count=$1
     fi
 
+    echo "Fixing up the last $count commits..."
     git reset --soft HEAD~$count
     git commit --amend --no-edit
 }

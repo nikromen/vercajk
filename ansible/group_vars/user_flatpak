@@ -10,6 +10,7 @@ flatpak_core:
   - com.sindresorhus.Caprine
   - com.github.tchx84.Flatseal
   - org.gnome.Firmware
+  - com.gitlab.bitseater.meteo
 
 flatpak_multimedia:
   - org.videolan.VLC
