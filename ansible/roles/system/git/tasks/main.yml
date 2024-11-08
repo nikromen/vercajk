@@ -4,6 +4,11 @@
     name: git
     state: present
 
+- name: Install git plugins
+  package:
+    name: "{{ git_plugins }}"
+    state: present
+
 - name: Install git utils
   package:
     name: "{{ git_utils }}"

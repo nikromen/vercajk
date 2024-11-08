@@ -4,3 +4,7 @@ git_utils:
 
 gui_git_utils:
   - gitk
+
+git_plugins:
+  - git-subtree
+  - git-filter-repo

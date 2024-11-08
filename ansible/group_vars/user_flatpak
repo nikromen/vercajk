@@ -11,6 +11,7 @@ flatpak_core:
   - com.github.tchx84.Flatseal
   - org.gnome.Firmware
   - com.gitlab.bitseater.meteo
+  - io.github.elevenhsoft.WebApps
 
 flatpak_multimedia:
   - org.videolan.VLC

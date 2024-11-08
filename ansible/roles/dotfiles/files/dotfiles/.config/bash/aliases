@@ -47,3 +47,7 @@ alias cdv='cd "$vercajk"'
 alias cdvd='cd "$vercajk/dotfiles"'
 
 alias vim="nvim"
+
+alias untar="tar -xvzf"
+alias tar-ls="tar -tvf"
+alias tar-create="tar -czvf"
