@@ -19,7 +19,6 @@ dev_apps_rpm_and_work_related:
   - fedpkg
   - mock
   - rpmdevtools
-  - hugo
 
 base_prog_langs:
   - golang
@@ -36,4 +35,3 @@ python_dev_tools:
   - python3-devel
   - krb5-devel
   - poetry
-  - pipenv

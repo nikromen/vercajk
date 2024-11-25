@@ -1,6 +1,5 @@
 ---
 gui_core_packages:
-  - ark
   - ocrmypdf
   - ffmpeg-free
   - adw-gtk3-theme
@@ -15,10 +14,8 @@ hyprland_packages:
   - wireplumber         # audio routing
   - polkit              # authorization service
   - polkit-kde          # gui for polkit
-  - copyq               # clipboard manager
   - playerctl           # media player control
   - blueman             # bluetooth manager
-  - dolphin             # file manager
   - brightnessctl       # screen brightness control
   - flameshot           # screenshot tool
   # TODO: do I need this when I have copyq?

@@ -34,6 +34,15 @@
     method: user
   loop: "{{ flatpak_multimedia }}"
 
+- name: Install multimedia extras
+  community.general.flatpak:
+    name: "{{ item }}"
+    state: present
+    method: user
+  loop: "{{ flatpak_multimedia_extras }}"
+  tags:
+    - multimedia_extras
+
 - name: Install games
   community.general.flatpak:
     name: "{{ item }}"
@@ -42,3 +51,37 @@
   loop: "{{ flatpak_games }}"
   tags:
     - games
+
+- name: Install IDEs
+  community.general.flatpak:
+    name: "{{ item }}"
+    state: present
+    method: user
+  loop: "{{ ide }}"
+  tags:
+    - ide
+
+- name: Install browsers
+  community.general.flatpak:
+    name: "{{ item }}"
+    state: present
+    method: user
+  loop: "{{ browsers }}"
+  tags:
+    - flatpak_browsers
+
+- name: Install hyprland gui apps
+  community.general.flatpak:
+    name: "{{ item }}"
+    state: present
+    method: user
+  loop: "{{ hyprland_gui_apps }}"
+
+- name: Install productivity apps
+  community.general.flatpak:
+    name: "{{ item }}"
+    state: present
+    method: user
+  loop: "{{ productivity_apps }}"
+  tags:
+    - flatpak_productivity

@@ -15,3 +15,10 @@
     state: present
   with_items:
     - "{{ hyprland_packages }}"
+
+- name: Install flatpak packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ hyprland_gui_apps }}"

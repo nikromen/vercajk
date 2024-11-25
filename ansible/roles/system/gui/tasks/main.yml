@@ -18,13 +18,6 @@
     name: "{{ gui_core_packages }}"
     state: present
 
-- name: Install core gui packages for rpm based systems
-  package:
-    name: "{{ gui_core_packages_rpm }}"
-    state: present
-  tags:
-    - rpm
-
 - name: Install Papirus icon theme
   package:
     name: "{{ item }}"

@@ -6,6 +6,7 @@ docs_root_dirs:
   - vm-images
   - rpm
   - git
+  - books
   - python-venvs
 
 git_forges:

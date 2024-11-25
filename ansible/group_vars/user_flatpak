@@ -12,6 +12,8 @@ flatpak_core:
   - org.gnome.Firmware
   - com.gitlab.bitseater.meteo
   - io.github.elevenhsoft.WebApps
+  - org.kde.ark
+  - org.kde.dolphin
 
 flatpak_multimedia:
   - org.videolan.VLC
@@ -22,6 +24,9 @@ flatpak_multimedia:
   - tv.kodi.Kodi
   - org.kde.gwenview
   - org.kde.okular
+  - com.github.johnfactotum.Foliate
+
+flatpak_multimedia_extras
   - org.kde.kdenlive
 
 flatpak_dev:
@@ -29,13 +34,14 @@ flatpak_dev:
   - org.filezillaproject.Filezilla
   - io.podman_desktop.PodmanDesktop
   - io.qt.Designer
-  - io.qt.QtCreator
   - com.jgraph.drawio.desktop
   - io.gitlab.adhami3310.Impression
 
 flatpak_games:
   - com.valvesoftware.Steam
   - com.play0ad.zeroad
+  - org.prismlauncher.PrismLauncher
+  - net.lutris.Lutris
 
 flatpak_productivity:
   - org.libreoffice.libreoffice
@@ -44,3 +50,11 @@ flatpak_productivity:
 
 flatpak_browsers:
   - io.github.ungoogled_software.ungoogled_chromium
+  - org.mozilla.firefox
+
+ide:
+  - com.visualstudio.code
+  - com.jetbrains.PyCharm-Community
+
+hyprland_gui_apps:
+  - com.github.hluk.copyq
