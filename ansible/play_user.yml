@@ -1,6 +1,6 @@
 ---
 - name: Play the user role on specified hosts under username
-  hosts: localhost
+  hosts: 192.168.122.217
   become: true
   become_user: "{{ ansible_user }}"
 

@@ -9,7 +9,6 @@ dev_apps:
   - valgrind
   - gdb
   - cppcheck
-  - pipenv
   - postgresql
   - pre-commit
 

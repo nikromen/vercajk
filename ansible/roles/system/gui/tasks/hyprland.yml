@@ -9,16 +9,10 @@
     name: solopasha/hyprland
     state: enabled
 
+# except flatpak apps, they are installed in user space
 - name: Install packages needed for nice DE
   package:
     name: "{{ item }}"
     state: present
   with_items:
     - "{{ hyprland_packages }}"
-
-- name: Install flatpak packages
-  package:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - "{{ hyprland_gui_apps }}"

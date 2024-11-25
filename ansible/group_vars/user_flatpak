@@ -26,7 +26,7 @@ flatpak_multimedia:
   - org.kde.okular
   - com.github.johnfactotum.Foliate
 
-flatpak_multimedia_extras
+flatpak_multimedia_extras:
   - org.kde.kdenlive
 
 flatpak_dev:
@@ -44,7 +44,7 @@ flatpak_games:
   - net.lutris.Lutris
 
 flatpak_productivity:
-  - org.libreoffice.libreoffice
+  - org.libreoffice.LibreOffice
   - org.mozilla.Thunderbird
   - net.cozic.joplin_desktop
 
