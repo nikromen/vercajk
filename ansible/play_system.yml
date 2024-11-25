@@ -1,6 +1,6 @@
 ---
 - name: Play the system role on specified hosts under username
-  hosts: 
+  hosts: localhost
   become: true
   become_user: root
 
