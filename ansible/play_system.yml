@@ -15,9 +15,6 @@
         - gui
     - role: system/python
     - role: system/vercajk
-    - role: system/ide
-      tags:
-        - ide
   # FIXME: This should work by default
   vars_files:
     - group_vars/system_core
