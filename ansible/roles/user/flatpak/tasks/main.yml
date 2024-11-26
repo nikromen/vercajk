@@ -18,57 +18,57 @@
     name: "{{ item }}"
     state: present
     method: user
-  loop: "{{ flatpak_core }}"
+  loop: "{{ core }}"
+
+- name: Install communication apps
+  community.general.flatpak:
+    name: "{{ item }}"
+    state: present
+    method: user
+  loop: "{{ communication }}"
 
 - name: Install dev tools
   community.general.flatpak:
     name: "{{ item }}"
     state: present
     method: user
-  loop: "{{ flatpak_dev }}"
+  loop: "{{ dev_tools }}"
+  tags:
+    - dev_tools
 
 - name: Install multimedia tools
   community.general.flatpak:
     name: "{{ item }}"
     state: present
     method: user
-  loop: "{{ flatpak_multimedia }}"
+  loop: "{{ multimedia }}"
 
 - name: Install multimedia extras
   community.general.flatpak:
     name: "{{ item }}"
     state: present
     method: user
-  loop: "{{ flatpak_multimedia_extras }}"
+  loop: "{{ multimedia_extra }}"
   tags:
-    - multimedia_extras
+    - multimedia_extra
 
 - name: Install games
   community.general.flatpak:
     name: "{{ item }}"
     state: present
     method: user
-  loop: "{{ flatpak_games }}"
+  loop: "{{ games }}"
   tags:
     - games
-
-- name: Install IDEs
-  community.general.flatpak:
-    name: "{{ item }}"
-    state: present
-    method: user
-  loop: "{{ ide }}"
-  tags:
-    - ide
 
 - name: Install browsers
   community.general.flatpak:
     name: "{{ item }}"
     state: present
     method: user
-  loop: "{{ flatpak_browsers }}"
+  loop: "{{ browsers }}"
   tags:
-    - flatpak_browsers
+    - browsers
 
 - name: Install hyprland gui apps
   community.general.flatpak:
@@ -82,4 +82,4 @@
     name: "{{ item }}"
     state: present
     method: user
-  loop: "{{ flatpak_productivity }}"
+  loop: "{{ productivity }}"

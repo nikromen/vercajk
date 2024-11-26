@@ -1,0 +1,16 @@
+---
+- name: Install fish
+  package:
+    name: fish
+    state: present
+
+- name: Install util-linux-user to change shell
+  package:
+    name: util-linux-user
+    state: present
+
+- name: Change sh to fish
+  command:
+    cmd: chsh -s /usr/bin/fish
+  args:
+    creates: "{{ home_dir }}/.config/fish"

@@ -4,6 +4,8 @@
 
 - name: Set up hyprland window manager
   import_tasks: hyprland.yml
+  tags:
+    - hyprland
 
 - name: Install KDE Plasma
   import_tasks: kde.yml

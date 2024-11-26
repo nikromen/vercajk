@@ -12,3 +12,8 @@
   import_tasks: rpm.yml
   tags:
     - rpm
+
+- name: Install IDEs
+  import_tasks: ides.yml
+  tags:
+    - ide

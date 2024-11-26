@@ -5,7 +5,7 @@
       "modules-left": [
         "cpu",
         "cpu#freq",
-        "cpu#cores",
+        //"cpu#cores",
         "custom/fanspeed",
         "temperature",
         "memory",
@@ -109,7 +109,6 @@
       },
       "cpu": {
         "format": " {usage}%",
-        "tooltip": false,
         "interval": 2
       },
       "cpu#freq": {

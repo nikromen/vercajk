@@ -1,12 +1,7 @@
 ---
-flatpak_core:
-  - com.discordapp.Discord
-  - org.signal.Signal
-  - org.telegram.desktop
+core:
   - com.bitwarden.desktop
   - org.keepassxc.KeePassXC
-  # element
-  - im.riot.Riot
   - com.sindresorhus.Caprine
   - com.github.tchx84.Flatseal
   - org.gnome.Firmware
@@ -15,21 +10,27 @@ flatpak_core:
   - org.kde.ark
   - org.kde.dolphin
 
-flatpak_multimedia:
+communication:
+  - com.discordapp.Discord
+  - org.signal.Signal
+  - org.telegram.desktop
+  # element
+  - im.riot.Riot
+
+multimedia:
   - org.videolan.VLC
   - com.spotify.Client
   - com.obsproject.Studio
   - org.gimp.GIMP
-  - com.spotify.Client
   - tv.kodi.Kodi
   - org.kde.gwenview
   - org.kde.okular
   - com.github.johnfactotum.Foliate
 
-flatpak_multimedia_extras:
+multimedia_extra:
   - org.kde.kdenlive
 
-flatpak_dev:
+dev_tools:
   - rest.insomnia.Insomnia
   - org.filezillaproject.Filezilla
   - io.podman_desktop.PodmanDesktop
@@ -37,24 +38,20 @@ flatpak_dev:
   - com.jgraph.drawio.desktop
   - io.gitlab.adhami3310.Impression
 
-flatpak_games:
+games:
   - com.valvesoftware.Steam
   - com.play0ad.zeroad
   - org.prismlauncher.PrismLauncher
   - net.lutris.Lutris
 
-flatpak_productivity:
+productivity:
   - org.libreoffice.LibreOffice
   - org.mozilla.Thunderbird
   - net.cozic.joplin_desktop
 
-flatpak_browsers:
+browsers:
   - io.github.ungoogled_software.ungoogled_chromium
   - org.mozilla.firefox
-
-ide:
-  - com.visualstudio.code
-  - com.jetbrains.PyCharm-Community
 
 hyprland_gui_apps:
   - com.github.hluk.copyq

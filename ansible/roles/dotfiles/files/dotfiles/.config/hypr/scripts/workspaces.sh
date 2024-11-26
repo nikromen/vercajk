@@ -110,7 +110,7 @@ check() {
 }
 
 main() {
-    ags_pid=$(pgrep -f ags || echo "")
+    ags_pid=$(pgrep ags || echo "")
     if [ -n "$ags_pid" ]; then
         kill -STOP $ags_pid
         trap "kill -CONT $ags_pid" EXIT

@@ -10,3 +10,8 @@
 
 - name: Setup tmux
   import_tasks: tmux.yml
+
+- name: Setup fish shell
+  import_tasks: fish.yml
+  tags:
+    - fish

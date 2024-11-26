@@ -1,3 +1,5 @@
 ---
 - name: Import installing poetry
   import_tasks: poetry.yml
+  tags:
+    - dev_tools

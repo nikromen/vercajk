@@ -1,12 +1,12 @@
 ---
 - name: Install basic prog lang support
   package:
-    name: "{{ base_prog_langs }}"
+    name: "{{ prog_langs }}"
     state: present
 
-- name: Install weird prog langs
+- name: Install prog langs extra
   package:
-    name: "{{ weird_prog_langs }}"
+    name: "{{ prog_langs_extra }}"
     state: present
   tags:
-    - weird_prog_lags
+    - prog_langs_extra

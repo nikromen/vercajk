@@ -1,5 +1,5 @@
 system:
-rpm, dev_tools, weird_prog_lags, gui, kde
+rpm, dev_tools, prog_langs_extra, gui, kde, hyprland
 
 user:
-games, dev_tools, gui, rpm, flatpak, kde, multimedia_extras
+games, dev_tools, gui, rpm, flatpak, kde, multimedia_extra, hyprland, fish

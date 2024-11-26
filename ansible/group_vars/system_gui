@@ -30,3 +30,4 @@ hyprland_packages:
   - hyprland-devel      # for plugins
   - hyprlock            # lock deamon
   - hypridle            # idle daemon
+  - network-manager-applet  # nmcli tray

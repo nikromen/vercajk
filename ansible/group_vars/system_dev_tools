@@ -19,7 +19,7 @@ dev_apps_rpm_and_work_related:
   - mock
   - rpmdevtools
 
-base_prog_langs:
+prog_langs:
   - golang
   - rust
   - cargo
@@ -27,7 +27,7 @@ base_prog_langs:
   - java-latest-openjdk-devel
   - nodejs
 
-weird_prog_langs:
+prog_langs_extra:
   - haskell-platform
 
 python_dev_tools:
