@@ -30,10 +30,13 @@
     - "{{ rpm_docs_dirs }}"
 
 # create directory for compiling software from source
-- name: Create directory for compiling software from source
+- name: Create directories for compiling software from source
   file:
-    path: "{{ home_dir }}/Documents/src"
+    path: "{{ home_dir }}/Documents/src/{{ item }}"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     state: directory
     mode: "0750"
+  with_items:
+    - local
+    - global

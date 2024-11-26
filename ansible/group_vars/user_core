@@ -8,6 +8,7 @@ docs_root_dirs:
   - git
   - books
   - python-venvs
+  - src
 
 git_forges:
   - github

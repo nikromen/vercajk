@@ -37,4 +37,4 @@
       if [ -e $HOME/.config/bash/custom_bash_profile_merged ]; then
           source $HOME/.config/bash/custom_bash_profile_merged
       fi
-  when: test_addons.stdout == "0"
+  when: test_addons.stdout != "0"
