@@ -1,7 +1,8 @@
 ---
 - name: Add user to mock group
+  become: true
+  become_user: root
   user:
     name: "{{ ansible_user }}"
     groups: mock
     append: true
-  become: true

@@ -11,6 +11,6 @@
 
 - name: Change sh to fish
   command:
-    cmd: chsh -s /usr/bin/fish
+    cmd: "chsh --shell $(which fish) {{ ansible_user }}"
   args:
     creates: "{{ home_dir }}/.config/fish"
