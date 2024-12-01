@@ -18,6 +18,7 @@ hyprland_packages:
   - blueman             # bluetooth manager
   - brightnessctl       # screen brightness control
   - flameshot           # screenshot tool
+  - copyq               # copy server
   # TODO: do I need this when I have copyq?
   - wl-clipboard        # clipboard manager for wayland
   - jq                  # json processor for my scripts

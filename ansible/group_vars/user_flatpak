@@ -8,7 +8,11 @@ core:
   - com.gitlab.bitseater.meteo
   - io.github.elevenhsoft.WebApps
   - org.kde.ark
-  - org.kde.dolphin
+  # dolphin in flatpak is still missing a lot of features :/
+  # - org.kde.dolphin
+  - io.github.giantpinkrobots.flatsweep
+  - org.kde.isoimagewriter
+  - org.kde.kcalc
 
 communication:
   - com.discordapp.Discord
@@ -36,11 +40,9 @@ dev_tools:
   - io.podman_desktop.PodmanDesktop
   - io.qt.Designer
   - com.jgraph.drawio.desktop
-  - io.gitlab.adhami3310.Impression
 
 games:
   - com.valvesoftware.Steam
-  - com.play0ad.zeroad
   - org.prismlauncher.PrismLauncher
   - net.lutris.Lutris
 
@@ -52,6 +54,3 @@ productivity:
 browsers:
   - io.github.ungoogled_software.ungoogled_chromium
   - org.mozilla.firefox
-
-hyprland_gui_apps:
-  - com.github.hluk.copyq

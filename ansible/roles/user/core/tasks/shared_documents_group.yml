@@ -1,0 +1,54 @@
+---
+- name: Create shared documents group
+  group:
+    name: shared-documents
+    state: present
+
+- name: Add user to shared documents group
+  user:
+    name: "{{ ansible_user }}"
+    groups: shared-documents
+    append: true
+  when: ansible_user != "root"
+
+- name: Ensure shared documents directory
+  file:
+    path: /srv/shared-documents-group
+    state: directory
+    owner: root
+    group: shared-documents
+    # setgid bit
+    mode: "1770"
+
+- name: Set ACL on shared documents directory
+  acl:
+    path: /srv/shared-documents-group
+    entity: group:shared-documents
+    permissions: rwx
+    default: true
+    recursive: true
+    state: present
+
+- name: Set ACL for others on shared documents directory
+  acl:
+    path: /srv/shared-documents-group
+    entity: other
+    permissions: ---
+    recursive: true
+    state: present
+
+- name: Set ACL for user on shared documents directory
+  acl:
+    path: /srv/shared-documents-group
+    entity: "{{ ansible_user }}"
+    permissions: rwx
+    recursive: true
+    state: present
+
+- name: Symlink shared documents to Documents
+  file:
+    src: /srv/shared-documents-group
+    dest: /home/{{ ansible_user }}/Documents/shared-documents
+    state: link
+    owner: "{{ ansible_user }}"
+    group: shared-documents

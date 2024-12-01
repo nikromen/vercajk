@@ -70,13 +70,6 @@
   tags:
     - browsers
 
-- name: Install hyprland gui apps
-  community.general.flatpak:
-    name: "{{ item }}"
-    state: present
-    method: user
-  loop: "{{ hyprland_gui_apps }}"
-
 - name: Install productivity apps
   community.general.flatpak:
     name: "{{ item }}"

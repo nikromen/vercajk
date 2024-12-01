@@ -9,8 +9,14 @@
     name: util-linux-user
     state: present
 
-- name: Change sh to fish
+- name: Get fish shell path
   command:
-    cmd: "chsh --shell $(which fish) {{ ansible_user }}"
-  args:
-    creates: "{{ home_dir }}/.config/fish"
+    cmd: which fish
+  register: fish_path_command
+  failed_when: fish_path_command.rc != 0
+
+- name: Change sh to fish
+  user:
+    name: "{{ ansible_user }}"
+    shell: "{{ fish_path_command.stdout }}"
+  when: ansible_user != "root"
