@@ -2,7 +2,7 @@
 container_packages:
   - podman
   - buildah
-  - podman-compose
+  - docker-compose
   - podman-docker
 
 dev_apps:

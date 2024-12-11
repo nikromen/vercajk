@@ -1,9 +1,4 @@
 ---
-- name: Create shared documents group
-  group:
-    name: shared-documents
-    state: present
-
 - name: Add user to shared documents group
   user:
     name: "{{ ansible_user }}"

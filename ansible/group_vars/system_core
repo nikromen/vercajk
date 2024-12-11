@@ -18,6 +18,9 @@ core_packages:
   - tmux
   - util-linux
   - zoxide
+  - fastfetch
+  - tuned
+  - tuned-ppd
 
 locales:
   - LC_ADDRESS=cs_CZ.UTF-8

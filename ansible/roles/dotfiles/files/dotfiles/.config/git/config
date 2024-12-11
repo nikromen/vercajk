@@ -2,7 +2,7 @@
     name = Jiri Kyjovsky
     email = j1.kyjovsky@gmail.com
 [core]
-    editor = vim
+    editor = nvim
     excludesfile = ~/.config/git/ignore
 [pull]
     rebase = true
@@ -12,3 +12,5 @@
     adog = log --all --decorate --oneline --graph
 [init]
 	defaultBranch = main
+[safe]
+	directory = /srv/shared-documents-group/git-repos/*

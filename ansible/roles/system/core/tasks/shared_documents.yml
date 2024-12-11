@@ -1,0 +1,30 @@
+---
+- name: Create shared documents group
+  group:
+    name: shared-documents
+    state: present
+
+- name: Create shared documents directory
+  file:
+    path: /srv/shared-documents
+    state: directory
+
+- name: Apply setgid bit to shared documents
+  file:
+    path: /srv/shared-documents
+    mode: "g=rwx,g+s"
+    state: directory
+
+- name: Set ACLs for shared documents
+  acl:
+    path: /srv/shared-documents-group
+    entry: "{{ item }}"
+    state: present
+    follow: true
+  with_items:
+    - user::rwx
+    - group:shared-documents:rwx
+    - other::---
+    - default:user::rwx
+    - default:group:shared-documents:rwx
+    - default:other::---

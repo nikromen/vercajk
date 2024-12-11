@@ -1,0 +1,51 @@
+---
+- name: Create ai-runner system user
+  user:
+    name: ai-runner
+    state: present
+    system: true
+    shell: /bin/bash
+    createhome: false
+
+- name: Create ai-runner group
+  group:
+    name: ai-runner
+    state: present
+
+- name: Create ai-runner shared directory
+  file:
+    name: /srv/ai-runner
+    state: directory
+    owner: ai-runner
+    group: ai-runner
+    mode: "0770"
+
+- name: Set ACLs for ai-runner shared directory
+  acl:
+    path: /srv/ai-runner
+    entry: "{{ item }}"
+    state: present
+    follow: true
+  with_items:
+    - user::rwx
+    - group:ai-runner:rwx
+    - other::---
+    - default:user::rwx
+    - default:group:ai-runner:rwx
+    - default:other::---
+
+- name: Put compose file in ai-runner shared directory
+  copy:
+    src: compose.yml
+    dest: /srv/ai-runner/compose.yml
+    owner: ai-runner
+    group: ai-runner
+    mode: "0640"
+
+- name: Ensure podman with docker-compose
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - podman
+    - docker-compose
