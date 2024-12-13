@@ -1,0 +1,108 @@
+---
+- name: Ensure podman
+  package:
+    name: podman
+    state: present
+
+- name: Create ai-runner system user
+  user:
+    name: ai-runner
+    state: present
+    system: true
+    shell: /bin/bash
+    home: /srv/ai-runner
+    groups: video,render
+    append: true
+
+- name: Change selinux context of /srv/ai-runner as home directory
+  sefcontext:
+    target: /srv/ai-runner
+    setype: user_home_t
+    state: present
+    persistent: true
+
+- name: Probe if ai-runner user is enabled for linger
+  command:
+    cmd: loginctl show-user ai-runner --property=Linger --value
+  register: probe_ai_runner_linger
+  ignore_errors: true
+
+- name: Ensure enable-linger for ai-runner
+  command:
+    cmd: loginctl enable-linger ai-runner
+  when: probe_ai_runner_linger.stdout != "yes"
+
+- name: Ensure XDG_RUNTIME_DIR for ai-runner in profile
+  lineinfile:
+    path: /srv/ai-runner/.bash_profile
+    line: "export XDG_RUNTIME_DIR=/run/user/$(id -u)"
+    create: true
+
+# this block for subuid and subgid is messy but there isn't a tool for dynamic
+# assigning of subuid and subgid ranges for system users and I don't want to make it
+- name: Check if ai-runner exists in /etc/subuid
+  command:
+    cmd: grep -q "^ai-runner:" /etc/subuid
+  register: probe_ai_runner_subuid
+  ignore_errors: true
+
+- name: Ensure ai-runner in /etc/subuid
+  command:
+    cmd: |
+      NEW_SUBUID=$(($(tail -1 /etc/subuid |awk -F ":" '{print $2}')+65536))
+      usermod --add-subuids $NEW_SUBUID-$((NEW_SUBUID+65535)) ai-runner
+  when: probe_ai_runner_subuid.rc != 0
+
+- name: Check if ai-runner exists in /etc/subgid
+  command:
+    cmd: grep -q "^ai-runner:" /etc/subgid
+  register: probe_ai_runner_subgid
+  ignore_errors: true
+
+- name: Ensure ai-runner in /etc/subgid
+  command:
+    cmd: |
+      NEW_SUBGID=$(($(tail -1 /etc/subgid |awk -F ":" '{print $2}')+65536))
+      usermod --add-subgids $NEW_SUBGID-$((NEW_SUBGID+65535)) ai-runner
+  when: probe_ai_runner_subgid.rc != 0
+
+- name: Podman system migrate to apply subuid and subgid changes
+  command:
+    cmd: podman system migrate
+  become_user: ai-runner
+  when: probe_ai_runner_subuid.rc != 0 or probe_ai_runner_subgid.rc != 0
+
+- name: Put compose file in ai-runner shared directory
+  copy:
+    src: ollama-openwebui-kube.yml
+    dest: /srv/ai-runner/ollama-openwebui-kube.yml
+    owner: ai-runner
+    group: ai-runner
+    mode: "0640"
+
+- name: Ensure systemd user directory for ai-runner
+  file:
+    path: /srv/ai-runner/.config/systemd/user
+    state: directory
+    mode: "0755"
+    owner: ai-runner
+    group: ai-runner
+    recurse: true
+
+- name: Install ollama-openwebui systemd user service unit
+  copy:
+    src: ollama-openwebui.service
+    dest: /srv/ai-runner/.config/systemd/user/ollama-openwebui.service
+    owner: ai-runner
+    group: ai-runner
+    mode: "0644"
+  notify:
+    - Restart ollama-openwebui
+
+- name: Activate ollama-openwebui systemd service unit
+  service:
+    name: ollama-openwebui.service
+    state: started
+    user: ai-runner
+    enabled: true
+    masked: false

@@ -30,3 +30,8 @@
 
 - name: Set up clock in the system
   import_tasks: clock.yml
+
+- name: Set up AI services
+  import_tasks: ai_runner.yml
+  tags:
+    - ai

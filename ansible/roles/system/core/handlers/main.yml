@@ -1,0 +1,7 @@
+---
+- name: Restart ollama-openwebui
+  service:
+    name: "ollama-openwebui.service"
+    state: restarted
+    enabled: true
+    daemon_reload: true

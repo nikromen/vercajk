@@ -14,3 +14,4 @@
 	defaultBranch = main
 [safe]
 	directory = /srv/shared-documents-group/git-repos/*
+	directory = /srv/shared-documents/git-repos/vercajk
