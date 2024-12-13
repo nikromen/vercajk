@@ -19,7 +19,6 @@
     target: /srv/ai-runner
     setype: user_home_t
     state: present
-    persistent: true
 
 - name: Probe if ai-runner user is enabled for linger
   command:
