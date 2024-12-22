@@ -14,4 +14,4 @@ fi
 hyprctl switchxkblayout "$active_kb" next
 
 current_layout=$(hyprctl --instance "$HYPRLAND_INSTANCE" devices -j | jq -r ".keyboards | map(select(.main)) | .[0] | .active_keymap")
-notify-send -e -u low -t 1500 -h string:x-canonical-private-synchronous:keyboard_notify -i "$HOME/.config/swaync/icons/keyboard.png" "$current_layout"
+notify-send -e -u low -t 1500 -h string:x-canonical-private-synchronous:keyboard_notify -i "$WM_ICONS/keyboard.png" "$current_layout"

@@ -11,20 +11,42 @@
     system: true
     shell: /bin/bash
     home: /srv/ai-runner
-    groups: video,render
+    groups: video,render,systemd-journal
     append: true
 
-- name: Change selinux context of /srv/ai-runner as home directory
+- name: Set selinux context for ai-runner home
   sefcontext:
     target: /srv/ai-runner
-    setype: user_home_t
+    setype: user_home_dir_t
     state: present
+
+- name: Ensure container directory for ai-runner
+  file:
+    path: /srv/ai-runner/.local/share/containers
+    state: directory
+    mode: "0700"
+    owner: ai-runner
+    group: ai-runner
+
+- name: Set selinux context for ai-runner container directory
+  sefcontext:
+    target: /srv/ai-runner/.local/share/containers
+    setype: container_file_t
+    state: present
+
+# TODO: this should be handler but for whatever reason sefcontext doesn't report change
+- name: Apply new selinux contexts
+  command:
+    cmd: restorecon -RFiv /srv/ai-runner
+  register: restorecon_ai_runner
+  changed_when: restorecon_ai_runner.stdout_lines | length > 0
 
 - name: Probe if ai-runner user is enabled for linger
   command:
     cmd: loginctl show-user ai-runner --property=Linger --value
   register: probe_ai_runner_linger
   ignore_errors: true
+  changed_when: false
 
 - name: Ensure enable-linger for ai-runner
   command:
@@ -41,12 +63,13 @@
 # assigning of subuid and subgid ranges for system users and I don't want to make it
 - name: Check if ai-runner exists in /etc/subuid
   command:
-    cmd: grep -q "^ai-runner:" /etc/subuid
+    cmd: grep -qs "^ai-runner:" /etc/subuid
   register: probe_ai_runner_subuid
   ignore_errors: true
+  changed_when: false
 
 - name: Ensure ai-runner in /etc/subuid
-  command:
+  shell:
     cmd: |
       NEW_SUBUID=$(($(tail -1 /etc/subuid |awk -F ":" '{print $2}')+65536))
       usermod --add-subuids $NEW_SUBUID-$((NEW_SUBUID+65535)) ai-runner
@@ -54,12 +77,13 @@
 
 - name: Check if ai-runner exists in /etc/subgid
   command:
-    cmd: grep -q "^ai-runner:" /etc/subgid
+    cmd: grep -qs "^ai-runner:" /etc/subgid
   register: probe_ai_runner_subgid
   ignore_errors: true
+  changed_when: false
 
 - name: Ensure ai-runner in /etc/subgid
-  command:
+  shell:
     cmd: |
       NEW_SUBGID=$(($(tail -1 /etc/subgid |awk -F ":" '{print $2}')+65536))
       usermod --add-subgids $NEW_SUBGID-$((NEW_SUBGID+65535)) ai-runner
@@ -83,10 +107,9 @@
   file:
     path: /srv/ai-runner/.config/systemd/user
     state: directory
-    mode: "0755"
+    mode: "0750"
     owner: ai-runner
     group: ai-runner
-    recurse: true
 
 - name: Install ollama-openwebui systemd user service unit
   copy:
@@ -96,12 +119,17 @@
     group: ai-runner
     mode: "0644"
   notify:
+    - Reload systemd daemon
     - Restart ollama-openwebui
 
+- name: Flush handlers before trying to run the service
+  meta: flush_handlers
+
 - name: Activate ollama-openwebui systemd service unit
+  become_user: ai-runner
   service:
     name: ollama-openwebui.service
     state: started
-    user: ai-runner
+    scope: user
     enabled: true
     masked: false

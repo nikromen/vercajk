@@ -4,7 +4,10 @@
 set -e
 
 usage() {
-    echo "Usage: $0 [COMMAND]
+    echo "Usage: $0 [OPTIONS] [COMMAND]
+    Options:
+        -h | --help     Show this message.
+        -n | --notify   Send a notification after changing the brightness.
 
     Commands:
         up      Increase the brightness.
@@ -23,7 +26,7 @@ get() {
 
 _icon() {
     local brightness=$1
-    local icon_path="$HOME/.config/swaync/icons/brightness"
+    local icon_path="$WM_ICONS/brightness"
     if [ $brightness -lt 20 ]; then
         echo "$icon_path/20.png"
     elif [ $brightness -lt 40 ]; then
@@ -39,23 +42,34 @@ _icon() {
 
 _notify() {
     local brightness=$(get)
-    notify-send -e -h string:x-canonical-private-synchronous:brightness_notify -h int:value:$brightness -u low -i "$(_icon $brightness)" "$brightness%"
+    notify-send -e -h string:x-canonical-private-synchronous:brightness_notify -h int:value:$brightness -u low -i "$(_icon $brightness)" "$brightness%a"
 }
 
+notify=false
 case $1 in
     up)
         brightnessctl set +5%
-        _notify
         ;;
     down)
         brightnessctl set 5%-
-        _notify
         ;;
     get)
         get
+        ;;
+    -h | --help)
+        usage
+        exit 0
+        ;;
+    -n | --notify)
+        notify=true
+        shift
         ;;
     *)
         usage
         exit 1
         ;;
 esac
+
+if [ "$notify" = true ]; then
+    _notify
+fi

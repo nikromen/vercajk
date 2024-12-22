@@ -10,6 +10,3 @@ export EDITOR="nvim"
 if [ -e $HOME/.config/bash/.docker_host ]; then
     source $HOME/.config/bash/.docker_host
 fi
-
-# this is global variable for the DE/WM shared scripts
-export HYPR_SCRIPTS=$HOME/.config/hypr/scripts

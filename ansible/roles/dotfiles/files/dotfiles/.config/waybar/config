@@ -88,7 +88,7 @@
         "format": "  {}",
         "format-en": "US",
         "format-cs": "CS",
-        "on-click": "$HOME/.config/hypr/scripts/keyboard_layout.sh"
+        "on-click": "$WM_SCRIPTS/keyboard_layout.sh"
       },
       "network#speed": {
         "format": "󰇚 {bandwidthDownBits} 󰕒 {bandwidthUpBits}",
@@ -122,7 +122,7 @@
         "interval": 2
       },
       "custom/fanspeed": {
-        "exec": "$HOME/.config/waybar/scripts/fan_speed.sh",
+        "exec": "$WM_SCRIPTS/fan_speed.sh --json",
         "format": "󰈐 {} RPM",
         "interval": 5,
         "return-type": "json"
