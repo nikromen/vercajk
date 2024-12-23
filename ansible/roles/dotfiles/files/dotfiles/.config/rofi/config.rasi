@@ -1,0 +1,110 @@
+configuration {
+    modi: "run,drun,window";
+    icon-theme: "Papirus-Dark";
+    show-icons: true;
+    terminal: "alacritty";
+    drun-display-format: "{icon} {name}";
+    location: 0;
+    disable-history: false;
+    display-drun: " 󰣆  Apps ";
+    display-run: "   Run ";
+    display-window: " 󰕰  Window ";
+    sidebar-mode: true;
+}
+
+@theme "catppuccin-macchiato"
+
+window {
+    height: 45%;
+    width: 60%;
+    border: 2px;
+    border-radius: 5px;
+    border-color: @border-col;
+    background-color: @base;
+    anchor: center;
+}
+
+mainbox {
+    background-color: @base;
+}
+
+inputbar {
+    children: [prompt, entry];
+    background-color: @base;
+    padding: 10px 20px;
+}
+
+prompt {
+    background-color: @blue;
+    padding: 6px;
+    text-color: @base;
+    border-radius: 5px;
+    margin: 20px 0px 0px 0px;
+}
+
+entry {
+    padding: 6px 6px 6px 10px;
+    margin: 20px 0px 0px 10px;
+    text-color: @text;
+    background-color: @base-light;
+    border-radius: 5px;
+    placeholder: "Search...";
+    placeholder-color: @grey;
+}
+
+listview {
+    border: 0px 0px 0px;
+    padding: 6px 0px 0px;
+    margin: 10px 20px 0px 20px;
+    columns: 1;
+    background-color: @base;
+}
+
+element {
+    padding: 5px;
+    background-color: @base;
+    text-color: @text;
+}
+
+element-text {
+    vertical-align: 0.5;
+    margin: 0px 0px 0px 10px;
+}
+
+element-icon {
+    margin: 5px 5px;
+    size: 48px;
+}
+
+element selected {
+    background-color:  @selected-col;
+    margin: 0px 0px 0px 20px;
+    border-radius: 5px;
+}
+
+button {
+    padding: 10px;
+    background-color: @base-light;
+    text-color: @grey;
+    vertical-align: 0.5;
+    horizontal-align: 0.5;
+}
+
+button selected {
+  background-color: @base;
+  text-color: @blue;
+}
+
+message {
+    background-color: @base-light;
+    margin: 2px;
+    padding: 2px;
+    border-radius: 5px;
+}
+
+textbox {
+    padding: 6px;
+    margin: 20px 0px 0px 20px;
+    text-color: @blue;
+    background-color: @base-light;
+}

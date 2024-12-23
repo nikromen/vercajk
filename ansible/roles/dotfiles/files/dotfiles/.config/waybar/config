@@ -124,7 +124,7 @@
       "custom/fanspeed": {
         "exec": "$WM_SCRIPTS/fan_speed.sh --json",
         "format": "󰈐 {} RPM",
-        "interval": 5,
+        "interval": 2,
         "return-type": "json"
       },
       "custom/notification": {
@@ -164,7 +164,8 @@
             "default": ["", ""]
         },
         "scroll-step": 5,
-        "on-click": "pavucontrol"
+        "on-click": "pavucontrol",
+        "tooltip": false
       },
       "clock": {
         "format": "{:%H:%M}",

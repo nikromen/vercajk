@@ -11,13 +11,6 @@
 - name: Setup tmux
   import_tasks: tmux.yml
 
-- name: Setup fish shell
-  become: true
-  become_user: root
-  import_tasks: fish.yml
-  tags:
-    - fish
-
 - name: Setup shared documents group
   become: true
   become_user: root

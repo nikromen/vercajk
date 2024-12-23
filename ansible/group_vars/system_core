@@ -21,6 +21,7 @@ core_packages:
   - fastfetch
   - tuned
   - tuned-ppd
+  - fish
 
 locales:
   - LC_ADDRESS=cs_CZ.UTF-8

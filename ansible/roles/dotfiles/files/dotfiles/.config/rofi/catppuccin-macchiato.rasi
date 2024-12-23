@@ -1,0 +1,16 @@
+* {
+    base:  #24273a;
+    base-light: #363a4f;
+    border-col: #7dc4e4;
+    selected-col: #494d64;
+    blue: #8aadf4;
+    text: #cad3f5;
+    grey: #6e738d;
+
+    font: "Symbols Nerd Font";
+}
+
+element-text, element-icon , mode-switcher {
+    background-color: inherit;
+    text-color:       inherit;
+}

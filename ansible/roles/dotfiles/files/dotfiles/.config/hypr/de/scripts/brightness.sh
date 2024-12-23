@@ -42,10 +42,26 @@ _icon() {
 
 _notify() {
     local brightness=$(get)
-    notify-send -e -h string:x-canonical-private-synchronous:brightness_notify -h int:value:$brightness -u low -i "$(_icon $brightness)" "$brightness%a"
+    notify-send -e -h string:x-canonical-private-synchronous:brightness_notify -h int:value:$brightness -u low -i "$(_icon $brightness)" "$brightness%"
 }
 
 notify=false
+while [ "$1" != "" ]; do
+    case $1 in
+        -h | --help)
+            usage
+            exit 0
+            ;;
+        -n | --notify)
+            notify=true
+            ;;
+        *)
+            break
+            ;;
+    esac
+    shift
+done
+
 case $1 in
     up)
         brightnessctl set +5%
