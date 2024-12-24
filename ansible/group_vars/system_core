@@ -17,11 +17,11 @@ core_packages:
   - stow
   - tmux
   - util-linux
-  - zoxide
   - fastfetch
   - tuned
   - tuned-ppd
   - fish
+  - tldr
 
 locales:
   - LC_ADDRESS=cs_CZ.UTF-8

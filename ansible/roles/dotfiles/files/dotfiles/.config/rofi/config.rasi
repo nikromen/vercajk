@@ -18,7 +18,7 @@ window {
     height: 45%;
     width: 60%;
     border: 2px;
-    border-radius: 5px;
+    border-radius: 10px;
     border-color: @border-col;
     background-color: @base;
     anchor: center;
@@ -38,7 +38,7 @@ prompt {
     background-color: @blue;
     padding: 6px;
     text-color: @base;
-    border-radius: 5px;
+    border-radius: 10px;
     margin: 20px 0px 0px 0px;
 }
 
@@ -47,7 +47,7 @@ entry {
     margin: 20px 0px 0px 10px;
     text-color: @text;
     background-color: @base-light;
-    border-radius: 5px;
+    border-radius: 10px;
     placeholder: "Search...";
     placeholder-color: @grey;
 }
@@ -79,7 +79,7 @@ element-icon {
 element selected {
     background-color:  @selected-col;
     margin: 0px 0px 0px 20px;
-    border-radius: 5px;
+    border-radius: 10px;
 }
 
 button {
@@ -99,7 +99,7 @@ message {
     background-color: @base-light;
     margin: 2px;
     padding: 2px;
-    border-radius: 5px;
+    border-radius: 10px;
 }
 
 textbox {

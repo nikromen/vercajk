@@ -9,5 +9,5 @@ $WM_SCRIPTS/workspaces.sh --refresh
 
 if pgrep -x waybar > /dev/null; then
     killall waybar
-    waybar &
+    waybar
 fi
