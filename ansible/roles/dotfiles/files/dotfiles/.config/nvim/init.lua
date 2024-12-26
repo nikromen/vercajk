@@ -17,3 +17,4 @@ require("lazy").setup("plugins")
 
 vim.cmd("NvimTreeOpen")
 vim.cmd("lua ColorMyPencils()")
+vim.cmd("Gitsigns toggle_current_line_blame")

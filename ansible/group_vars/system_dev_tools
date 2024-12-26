@@ -11,6 +11,7 @@ dev_apps:
   - cppcheck
   - postgresql
   - pre-commit
+  - luarocks
 
 dev_apps_rpm_and_work_related:
   - copr-cli

@@ -41,9 +41,6 @@ vim.opt.termguicolors = true
 vim.opt.list = true
 vim.opt.listchars = { tab = '» ', trail = '_', extends = '…', precedes = '…', nbsp = '␣' }
 
--- vimspector config
-vim.g.vimspector_enable_mappings = 'HUMAN'
-
 -- disable netrw at the very start of your init.lua
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
