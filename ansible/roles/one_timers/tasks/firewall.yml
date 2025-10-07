@@ -1,0 +1,13 @@
+---
+- name: Make sure ssh is allowed
+  ansible.posix.firewalld:
+    service: ssh
+    permanent: true
+    state: enabled
+    immediate: true
+
+- name: Start and enable firewalld
+  service:
+    name: firewalld
+    state: started
+    enabled: true

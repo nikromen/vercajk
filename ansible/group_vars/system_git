@@ -1,7 +1,0 @@
----
-git_utils:
-  - tig
-
-git_plugins:
-  - git-subtree
-  - git-filter-repo

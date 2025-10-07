@@ -1,0 +1,25 @@
+---
+- name: Create directory tree for user
+  include_tasks: directory_structure.yml
+
+- name: Include ssh setup
+  import_tasks: firewall.yml
+
+- name: Install flatpak apps
+  import_tasks: flatpak.yml
+
+- name: Setup tmux
+  import_tasks: tmux.yml
+
+- name: Setup shared documents group
+  become: true
+  become_user: root
+  import_tasks: shared_documents_group.yml
+  tags:
+    - shared-documents
+
+- name: Import rpm related dev tools
+  import_tasks: rpm.yml
+  tags:
+    - rpm
+    - development_tools

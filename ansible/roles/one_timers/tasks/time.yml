@@ -1,0 +1,12 @@
+---
+- name: Get timedatectl status
+  command:
+    cmd: timedatectl show
+  register: timedatectl_status
+  changed_when: false
+
+- name: Synchronize clock over the network
+  command:
+    cmd: timedatectl set-ntp true
+  changed_when: true
+  when: timedatectl_status.stdout.find('NTP') == "no"

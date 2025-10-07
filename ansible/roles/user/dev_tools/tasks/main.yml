@@ -1,5 +1,0 @@
----
-- name: Import rpm related dev tools
-  import_tasks: rpm.yml
-  tags:
-    - rpm

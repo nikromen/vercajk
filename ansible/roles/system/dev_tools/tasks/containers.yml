@@ -1,7 +1,0 @@
----
-- name: Set up containers
-  package:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - "{{ container_packages }}"

@@ -1,5 +1,0 @@
----
-- name: Install openssh-server
-  package:
-    name: openssh-server
-    state: present

@@ -1,9 +1,0 @@
-- name: Install multimedia stuff - @multimedia
-  package:
-    name: "@multimedia"
-    state: present
-
-- name: Ensure pipewire was installed (probably was by the @multimedia group)
-  package:
-    name: pipewire
-    state: present

@@ -1,0 +1,51 @@
+---
+# these are truly base one-timers that should be installed on some type of machine
+# the rest can be installed by user
+
+core:
+  - com.bitwarden.desktop
+  - org.keepassxc.KeePassXC
+  - com.github.tchx84.Flatseal
+  - org.gnome.Firmware
+  - com.gitlab.bitseater.meteo
+  - dev.heppen.webapps
+  - org.kde.ark
+  # dolphin in flatpak is still missing a lot of features :/
+  # - org.kde.dolphin
+  - io.github.giantpinkrobots.flatsweep
+  - org.kde.isoimagewriter
+  - org.kde.kcalc
+  - org.mozilla.firefox
+  - org.videolan.VLC
+  - org.kde.gwenview
+  - org.kde.okular
+
+communication:
+  - com.sindresorhus.Caprine
+  - com.discordapp.Discord
+  - org.signal.Signal
+  - org.telegram.desktop
+  # element
+  - im.riot.Riot
+
+multimedia:
+  - com.spotify.Client
+  - org.gimp.GIMP
+  # ebook reader
+  - com.github.johnfactotum.Foliate
+
+development_tools:
+  - rest.insomnia.Insomnia
+  - io.podman_desktop.PodmanDesktop
+  - io.qt.Designer
+  - com.jgraph.drawio.desktop
+
+games:
+  - com.valvesoftware.Steam
+  - org.prismlauncher.PrismLauncher
+  - net.lutris.Lutris
+
+productivity:
+  - org.libreoffice.LibreOffice
+  - org.mozilla.Thunderbird
+  - net.cozic.joplin_desktop

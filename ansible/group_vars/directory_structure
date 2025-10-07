@@ -1,0 +1,20 @@
+---
+docs_root_dirs:
+  - work
+  - personal
+  - vm-images
+  - rpm
+  - git
+  - books
+  - python-venvs
+  - src
+
+git_forges:
+  - github
+  - gitlab
+  - pagure
+  - distgit
+
+rpm_docs_dirs:
+  - mock-results
+  - fedora-review

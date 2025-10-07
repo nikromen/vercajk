@@ -5,6 +5,7 @@ import click
 from vercajk.cli.ansible.base import ansible
 from vercajk.cli.ci import ci
 from vercajk.cli.fish import fish
+from vercajk.cli.kickstart import kickstart
 from vercajk.path import vercajk_path
 
 
@@ -28,6 +29,7 @@ def path():
 vercajk_cli.add_command(ansible)
 vercajk_cli.add_command(ci)
 vercajk_cli.add_command(fish)
+vercajk_cli.add_command(kickstart)
 
 
 if __name__ == "__main__":
