@@ -14,6 +14,13 @@
     font-family: "Symbols Nerd Font";
 }
 
+#tray menu menuitem {
+    min-height: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    margin: 0.2rem 0.4rem;
+}
+
 #custom-powermenu,
 #custom-notification,
 #cpu,

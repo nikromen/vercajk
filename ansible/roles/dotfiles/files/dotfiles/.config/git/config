@@ -14,3 +14,5 @@
 	defaultBranch = main
 [safe]
 	directory = /srv/shared-documents/git-repos/vercajk
+	directory = /srv/shared-documents/school/diplomka/repo
+	directory = /srv/shared-documents/school/diplomka/rpmeta
