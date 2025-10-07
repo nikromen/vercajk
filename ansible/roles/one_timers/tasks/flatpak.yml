@@ -1,53 +1,56 @@
 ---
-- name: Ensure flatpak is installed
+- name: Flatpak installation and configuration tasks
   become: true
   become_user: root
-  package:
-    name: flatpak
-    state: present
+  block:
+    - name: Ensure flatpak is installed
+      package:
+        name: flatpak
+        state: present
 
-- name: Enable flathub for user repo
-  community.general.flatpak_remote:
-    name: flathub
-    state: present
-    flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
-    method: user
+    - name: Enable flathub for system repo
+      community.general.flatpak_remote:
+        name: flathub
+        state: present
+        flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+        method: system
 
-- name: Install basic flatpak apps
-  community.general.flatpak:
-    name: "{{ item }}"
-    state: present
-    method: user
-  loop: "{{ core }}"
+    - name: Install basic flatpak apps
+      community.general.flatpak:
+        name: "{{ item }}"
+        state: present
+        method: system
+      loop: "{{ core }}"
 
-- name: Install communication apps
-  community.general.flatpak:
-    name: "{{ item }}"
-    state: present
-    method: user
-  loop: "{{ communication }}"
+    - name: Install communication apps
+      community.general.flatpak:
+        name: "{{ item }}"
+        state: present
+        method: system
+      loop: "{{ communication }}"
 
-- name: Install dev tools
-  community.general.flatpak:
-    name: "{{ item }}"
-    state: present
-    method: user
-  loop: "{{ dev_tools }}"
-  tags:
-    - dev_tools
+    - name: Install dev tools
+      community.general.flatpak:
+        name: "{{ item }}"
+        state: present
+        method: system
+      loop: "{{ dev_tools }}"
+      tags:
+        - dev_tools
 
-- name: Install multimedia tools
-  community.general.flatpak:
-    name: "{{ item }}"
-    state: present
-    method: user
-  loop: "{{ multimedia }}"
+    - name: Install multimedia tools
+      community.general.flatpak:
+        name: "{{ item }}"
+        state: present
+        method: system
+      loop: "{{ multimedia }}"
 
-- name: Install multimedia extras
-  community.general.flatpak:
-    name: "{{ item }}"
-    state: present
-    method: user
+    - name: Install multimedia extras
+      community.general.flatpak:
+        name: "{{ item }}"
+        state: present
+        method: system
+      loop: "{{ multimedia_extras | default([]) }}"
   loop: "{{ multimedia_extra }}"
   tags:
     - multimedia_extra

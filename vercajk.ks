@@ -48,6 +48,8 @@ fzf
 cronie
 btop
 tree
+plymouth
+plymouth-system-theme
 stow
 tmux
 firewalld
@@ -211,28 +213,154 @@ dnf -y check-update || true
 dnf -y install pycharm-community code
 {% endif %}
 
-# Setup the flatpak installation service for post-boot installation
-# This will install all flatpak applications via ansible playbook
-mkdir -p /etc/vercajk
-cat > /etc/systemd/system/vercajk-flatpak.service << EOF
+# Create temporary directory for installation process
+mkdir -p /tmp/vercajk-install
+mkdir -p /tmp/vercajk-status
+
+# Install minimal Ansible
+dnf -y install ansible-core python3-pip git
+
+# Set up local Ansible environment in temp directory
+cd /tmp/vercajk-install
+pip3 install --target=/tmp/vercajk-install/python-libs ansible-core
+export PYTHONPATH=/tmp/vercajk-install/python-libs
+export ANSIBLE_COLLECTIONS_PATH=/tmp/vercajk-install/collections
+mkdir -p /tmp/vercajk-install/collections
+
+# Install required collections locally
+ansible-galaxy collection install -p /tmp/vercajk-install/collections community.general
+
+# Create temporary directory structure for ansible
+mkdir -p /tmp/vercajk-install/callback_plugins
+
+# Clone the vercajk repository to get the ansible files
+dnf -y install git
+git clone https://github.com/nikromen/vercajk.git /tmp/vercajk-repo
+cp -r /tmp/vercajk-repo/ansible/* /tmp/vercajk-install/
+
+# Create local Ansible config
+cat > /tmp/vercajk-install/ansible.cfg << EOF
+[defaults]
+collections_path = /tmp/vercajk-install/collections
+callback_plugins = /tmp/vercajk-install/callback_plugins
+stdout_callback = plymouth
+display_skipped_hosts = no
+EOF
+
+# Create a wrapper script to show Plymouth messages during execution
+cat > /usr/local/bin/vercajk-plymouth-wrapper << 'EOF'
+#!/bin/bash
+
+# Get the command to execute
+CMD="$1"
+shift
+ARGS="$@"
+
+# Function to send Plymouth messages
+plymouth_message() {
+    if plymouth --ping; then
+        plymouth display-message --text="$1"
+    fi
+}
+
+# Start message
+plymouth_message "Starting: $CMD..."
+
+# Execute the command with its arguments and capture its output
+OUTPUT=$($CMD $ARGS 2>&1)
+EXIT_CODE=$?
+
+# Show completion message
+if [ $EXIT_CODE -eq 0 ]; then
+    plymouth_message "Completed: $CMD"
+else
+    plymouth_message "Failed: $CMD (Exit code: $EXIT_CODE)"
+fi
+
+# Return the command's exit code
+exit $EXIT_CODE
+EOF
+
+# Make the wrapper script executable
+chmod +x /usr/local/bin/vercajk-plymouth-wrapper
+
+# Setup the one-timers service for system configuration
+cat > /etc/systemd/system/vercajk-one-timers.service << EOF
 [Unit]
-Description=Run flatpak installations via Ansible after first boot
-After=network-online.target
-Wants=network-online.target
-ConditionPathExists=!/var/lib/vercajk/flatpak-installed
+Description=Run one-time system configurations via Ansible
+After=network-online.target plymouth-start.service
+Wants=network-online.target plymouth-start.service
+ConditionPathExists=!/tmp/vercajk-status/one-timers-completed
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/ansible-playbook -t flatpak /etc/vercajk/ansible/play_user.yml
-ExecStartPost=/usr/bin/mkdir -p /var/lib/vercajk
-ExecStartPost=/usr/bin/touch /var/lib/vercajk/flatpak-installed
+Environment="PYTHONPATH=/tmp/vercajk-install/python-libs"
+Environment="ANSIBLE_CONFIG=/tmp/vercajk-install/ansible.cfg"
+Environment="ANSIBLE_COLLECTIONS_PATH=/tmp/vercajk-install/collections"
+WorkingDirectory=/tmp/vercajk-install
+ExecStartPre=/usr/local/bin/vercajk-plymouth-wrapper /usr/bin/plymouth display-message --text="Setting up vercajk system: Running one-time system configurations..."
+ExecStart=/bin/bash -c '/usr/bin/plymouth display-message --text="Running system configuration tasks..." && /usr/bin/plymouth change-mode --updates && /usr/bin/ansible-playbook /tmp/vercajk-install/play_one_timers.yml && /usr/bin/plymouth change-mode --system-boot'
+ExecStartPost=/usr/bin/mkdir -p /tmp/vercajk-status
+ExecStartPost=/usr/bin/touch /tmp/vercajk-status/one-timers-completed
+ExecStartPost=/usr/local/bin/vercajk-plymouth-wrapper /usr/bin/plymouth display-message --text="System configurations completed!"
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-# Enable the flatpak installation service
-systemctl enable vercajk-flatpak.service
+# Setup the dotfiles service for user nikromen
+cat > /etc/systemd/system/vercajk-dotfiles.service << EOF
+[Unit]
+Description=Configure dotfiles for user nikromen
+After=vercajk-one-timers.service plymouth-start.service
+Wants=network-online.target plymouth-start.service
+ConditionPathExists=!/tmp/vercajk-status/dotfiles-completed
+
+[Service]
+Type=oneshot
+User=nikromen
+Group=nikromen
+Environment="ANSIBLE_USER=nikromen"
+Environment="USER=nikromen"
+Environment="PYTHONPATH=/tmp/vercajk-install/python-libs"
+Environment="ANSIBLE_CONFIG=/tmp/vercajk-install/ansible.cfg"
+Environment="ANSIBLE_COLLECTIONS_PATH=/tmp/vercajk-install/collections"
+WorkingDirectory=/tmp/vercajk-install
+ExecStartPre=/bin/bash -c '/usr/bin/plymouth display-message --text="Setting up dotfiles for user nikromen..."'
+ExecStart=/bin/bash -c '/usr/bin/plymouth change-mode --updates && /usr/bin/ansible-playbook -e "hosts=localhost ansible_user=nikromen" /tmp/vercajk-install/play_dotfiles.yml && /usr/bin/plymouth change-mode --system-boot'
+ExecStartPost=/usr/bin/mkdir -p /tmp/vercajk-status
+ExecStartPost=/usr/bin/touch /tmp/vercajk-status/dotfiles-completed
+ExecStartPost=/bin/bash -c '/usr/bin/plymouth display-message --text="User dotfiles configuration completed!"'
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Setup the cleanup service to remove the unit files after execution
+cat > /etc/systemd/system/vercajk-cleanup.service << EOF
+[Unit]
+Description=Cleanup vercajk installation artifacts
+After=vercajk-dotfiles.service plymouth-start.service
+Wants=plymouth-start.service
+ConditionPathExists=/tmp/vercajk-status/one-timers-completed
+ConditionPathExists=/tmp/vercajk-status/dotfiles-completed
+
+[Service]
+Type=oneshot
+ExecStartPre=/usr/bin/plymouth display-message --text="Cleaning up vercajk installation files..."
+ExecStart=/bin/bash -c "rm -rf /tmp/vercajk-install /tmp/vercajk-status /tmp/vercajk-repo || true"
+ExecStart=/bin/bash -c "rm -f /etc/systemd/system/vercajk-*.service || true"
+ExecStart=/bin/bash -c "systemctl daemon-reload"
+ExecStartPost=/usr/bin/plymouth display-message --text="vercajk setup completed! System is ready to use."
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Enable the services
+systemctl enable vercajk-one-timers.service
+systemctl enable vercajk-dotfiles.service
+systemctl enable vercajk-cleanup.service
 
 # This tool itself
 {% if "vercajk" in tags|default([]) or not tags|default([]) %}

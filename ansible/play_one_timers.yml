@@ -1,21 +1,9 @@
 ---
-- name: Play the user role on specified hosts under username
+- name: Play the one timers as root for system-wide changes
   hosts: localhost
   become: true
-  become_user: "{{ ansible_user }}"
+  become_user: root
 
   roles:
-    - role: user/core
-    - role: user/dev_tools
-      tags:
-        - dev_tools
-    - role: user/flatpak
-      tags:
-        - flatpak
-    - role: user/konsave
-      tags:
-        - kde
-  vars_files:
-    - group_vars/user_core
-    - group_vars/user_flatpak
-    #- group_vars/user_konsave
+    - role: one_timers
+      tags: "{{ tags | default([]) }}"

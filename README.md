@@ -29,3 +29,5 @@ Available tags:
 - `productivity` - Office and productivity tools
 
 See [FLATPAK.md](FLATPAK.md) for information about the Flatpak installation process.
+
+See [PLYMOUTH.md](PLYMOUTH.md) for information about the Plymouth integration providing visual feedback during installation.
