@@ -52,6 +52,13 @@
         method: system
       loop: "{{ productivity }}"
 
+- name: Enable flathub for user repo
+  community.general.flatpak_remote:
+    name: flathub
+    state: present
+    flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+    method: user
+
 - name: Install games
   community.general.flatpak:
     name: "{{ item }}"

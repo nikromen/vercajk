@@ -6,6 +6,9 @@
 # No specific tags provided - full installation
 {% endif %}
 
+# GUI installation for disk partitioning, user setup, and password configuration
+graphical
+
 # Basic system configuration
 keyboard --xlayouts='us','cz (qwerty)'
 lang en_US.UTF-8
@@ -15,20 +18,18 @@ keyboard --xlayouts='us','cz (qwerty)'
 lang en_US.UTF-8
 timezone Europe/Prague --utc
 
-# Disk partitioning - automatic
-autopart
-# WARNING: THIS WILL ERASE THE DRIVE!!!
-clearpart --none --initlabel
+# Disk partitioning - interactive (done via GUI)
+# Remove autopart and clearpart to allow manual partitioning
+# The installer will prompt for disk partitioning during installation
 
-# Default user configuration
-rootpw --plaintext fedora
-user --name=nikromen --groups=wheel --gecos="nikromen" --password fedora
+# User configuration - interactive (done via GUI)
+# The installer will prompt for root password and user creation
 
 # Enable basic services
 services --enabled="NetworkManager,sshd,firewalld,tuned"
 
 # Run the Setup Agent on first boot
-firstboot --disabled
+firstboot --enable
 
 # Reboot after installation
 reboot
