@@ -20,7 +20,7 @@ class ConfigManager:
 
             with open(config_path) as f:
                 data = yaml.safe_load(f)
-                return Config(**data)
+                return Config(repo_path=Path(data["repo_path"]).expanduser().resolve())
 
         raise FileNotFoundError(
             "No configuration file found in user or system paths. Please set up the configuration.",

@@ -7,7 +7,7 @@ from os import getcwd
 from pathlib import Path
 from typing import Optional
 
-from vercajk.path import vercajk_path
+from vercajk.config import ConfigManager
 
 
 class FishToBashConverter(Exception):
@@ -17,7 +17,8 @@ class FishToBashConverter(Exception):
 class Converterator3000:
     def __init__(self, store_to: Optional[str]) -> None:
         self.store_to = Path(store_to or getcwd())
-        self.bash_dir = vercajk_path() / "dotfiles" / ".config" / "bash"
+        vercajk_path = ConfigManager.get_config().repo_path
+        self.bash_dir = vercajk_path / "dotfiles" / ".config" / "bash"
 
     def get_variables(self) -> None:
         var_file_path = self.bash_dir / "variables"

@@ -13,7 +13,6 @@ from vercajk.ansible import AnsibleObj, run_ansible_playbook, setup_ansible_cmd
 from vercajk.constants import ISO_MIME, QCOW2_MIME
 from vercajk.exceptions import VercajkImageException
 from vercajk.img import Image
-from vercajk.path import vercajk_path
 from vercajk.spells import get_mime, get_temporary_dir
 
 
