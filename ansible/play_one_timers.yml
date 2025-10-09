@@ -2,7 +2,7 @@
 - name: Play the one timers as root for system-wide changes
   hosts: localhost
   become: true
-  become_user: root
+  become_user: nikromen
 
   vars_files:
     - group_vars/all

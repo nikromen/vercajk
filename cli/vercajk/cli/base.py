@@ -33,6 +33,8 @@ def vercajk_cli(ctx: click.Context, repo_path: Path):
     config = ConfigManager.get_config()
     if repo_path:
         config.repo_path = repo_path
+    
+    ctx.obj = Obj(config=config)
 
 
 @vercajk_cli.command("path")

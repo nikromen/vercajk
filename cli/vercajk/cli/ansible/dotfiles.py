@@ -13,4 +13,4 @@ def dotfiles(ctx: Context):
     dotfile_playbook_path = ctx.obj.config.repo_path / "ansible" / "play_dotfiles.yml"
     print(dotfile_playbook_path)
 
-    run_ansible_playbook(setup_ansible_cmd(ctx.ansible_ctx), dotfile_playbook_path)
+    run_ansible_playbook(setup_ansible_cmd(ctx.obj.ansible_ctx), dotfile_playbook_path)

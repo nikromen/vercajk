@@ -6,6 +6,8 @@
   changed_when: false
 
 - name: Synchronize clock over the network
+  become: true
+  become_user: root
   command:
     cmd: timedatectl set-ntp true
   changed_when: true

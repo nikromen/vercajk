@@ -13,4 +13,4 @@ def one_timers(ctx: Context):
     playbook_path = ctx.obj.config.repo_path / "ansible" / "play_one_timers.yml"
     print(playbook_path)
 
-    run_ansible_playbook(setup_ansible_cmd(ctx.ansible_ctx), playbook_path)
+    run_ansible_playbook(setup_ansible_cmd(ctx.obj.ansible_ctx), playbook_path)
