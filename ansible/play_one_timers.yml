@@ -4,6 +4,10 @@
   become: true
   become_user: root
 
+  vars_files:
+    - group_vars/all
+    - group_vars/directory_structure
+    - group_vars/flatpak_apps
+
   roles:
     - role: one_timers
-      tags: "{{ tags | default([]) }}"

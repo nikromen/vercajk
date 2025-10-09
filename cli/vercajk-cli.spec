@@ -13,7 +13,9 @@ BuildArch:      noarch
 
 BuildRequires:  python3-devel
 BuildRequires:  pyproject-rpm-macros
-BuildRequires:  python3-click
+
+Requires:  python3-click
+Requires:  ansible-core
 
 
 %description

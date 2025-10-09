@@ -34,9 +34,9 @@
         name: "{{ item }}"
         state: present
         method: system
-      loop: "{{ dev_tools }}"
+      loop: "{{ development_tools }}"
       tags:
-        - dev_tools
+        - development_tools
 
     - name: Install multimedia tools
       community.general.flatpak:
@@ -44,16 +44,13 @@
         state: present
         method: system
       loop: "{{ multimedia }}"
-
-    - name: Install multimedia extras
+    
+    - name: Install productivity apps
       community.general.flatpak:
         name: "{{ item }}"
         state: present
         method: system
-      loop: "{{ multimedia_extras | default([]) }}"
-  loop: "{{ multimedia_extra }}"
-  tags:
-    - multimedia_extra
+      loop: "{{ productivity }}"
 
 - name: Install games
   community.general.flatpak:
@@ -63,19 +60,3 @@
   loop: "{{ games }}"
   tags:
     - games
-
-- name: Install browsers
-  community.general.flatpak:
-    name: "{{ item }}"
-    state: present
-    method: user
-  loop: "{{ browsers }}"
-  tags:
-    - browsers
-
-- name: Install productivity apps
-  community.general.flatpak:
-    name: "{{ item }}"
-    state: present
-    method: user
-  loop: "{{ productivity }}"

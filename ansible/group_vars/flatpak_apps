@@ -31,8 +31,6 @@ communication:
 multimedia:
   - com.spotify.Client
   - org.gimp.GIMP
-  # ebook reader
-  - com.github.johnfactotum.Foliate
 
 development_tools:
   - rest.insomnia.Insomnia
