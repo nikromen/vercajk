@@ -3,9 +3,10 @@ import re
 import shutil
 import subprocess
 import tempfile
+from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Iterator, Optional
+from typing import Optional
 
 
 @contextmanager
@@ -29,6 +30,8 @@ def find_fst_number_in_str(string: str) -> Optional[int]:
 
 def get_mime(path: Path) -> str:
     process = subprocess.run(
-        ["file", "-b", "--mime-type", str(path)], capture_output=True, text=True
+        ["file", "-b", "--mime-type", str(path)],
+        capture_output=True,
+        text=True,
     )
     return process.stdout.split()[-1].strip()

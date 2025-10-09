@@ -1,34 +1,16 @@
 import click
 from click import Context
 
-from vercajk.ansible import AnsibleObj, run_ansible_playbook
-from vercajk.path import vercajk_path
+from vercajk.ansible import run_ansible_playbook, setup_ansible_cmd
 
 
 @click.command("dotfiles")
-@click.option(
-    "-p",
-    "--playbook-path",
-    is_flag=True,
-    help="Print on stdout the path of dotfile playbook path.",
-)
 @click.pass_context
-def dotfiles(ctx: Context, playbook_path: bool):
+def dotfiles(ctx: Context):
     """
     Run dotfiles playbook to sync user specific dotfiles in home folder.
     """
-    dotfile_playbook_path = vercajk_path() / "ansible" / "play_dotfiles.yml"
-    if playbook_path:
-        print(dotfile_playbook_path)
-        exit(0)
+    dotfile_playbook_path = ctx.obj.config.repo_path / "ansible" / "play_dotfiles.yml"
+    print(dotfile_playbook_path)
 
-    obj: AnsibleObj = ctx.obj
-
-    base_cmd = ["ansible-playbook"]
-    if obj.verbose:
-        base_cmd.append(obj.verbose)
-
-    if obj.tags:
-        base_cmd.append(obj.tags)
-
-    run_ansible_playbook(base_cmd, dotfile_playbook_path, obj.user_host_dict)
+    run_ansible_playbook(setup_ansible_cmd(ctx.ansible_ctx), dotfile_playbook_path)

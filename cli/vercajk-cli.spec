@@ -2,10 +2,10 @@
 
 Name:           %{srcname}-cli
 Version:        1.0.0
-Release:        1%{?dist}
+Release:        %autorelease
 Summary:        Cli tool for my personal vercajk
 
-License:        GPLv3
+License:        MIT
 URL:            https://github.com/nikromen/%{srcname}
 Source0:        %{url}/archive/refs/tags/%{version}.tar.gz
 

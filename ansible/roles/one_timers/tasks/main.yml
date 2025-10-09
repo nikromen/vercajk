@@ -8,18 +8,14 @@
 - name: Install flatpak apps
   import_tasks: flatpak.yml
 
-- name: Setup tmux
-  import_tasks: tmux.yml
-
-- name: Setup shared documents group
-  become: true
-  become_user: root
-  import_tasks: shared_documents_group.yml
-  tags:
-    - shared-documents
-
 - name: Import rpm related dev tools
   import_tasks: rpm.yml
   tags:
     - rpm
     - development_tools
+
+- name: Setup time and ntp
+  import_tasks: time.yml
+
+- name: Setup tmux
+  import_tasks: tmux.yml

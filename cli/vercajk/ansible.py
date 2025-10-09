@@ -3,25 +3,20 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
+# TODO: inventory, users, hosts.... create file from it
 @dataclass
 class AnsibleObj:
     verbose: str
-    user_host_dict: dict[str, list[str]]
-    tags: str
+    tags: list[str]
+    skip_tags: list[str]
 
 
 def run_ansible_playbook(
-    base_cmd: list[str], playbook_path: Path, user_host_dict: dict[str, list[str]]
+    base_cmd: list[str],
+    playbook_path: Path,
 ) -> None:
-    for user, hosts in user_host_dict.items():
-        hosts_str = ",".join(hosts)
-        cmd = base_cmd + [
-            "-e",
-            f"hosts={hosts_str} ansible_user={user}",
-            str(playbook_path),
-        ]
-        print(cmd)
-        subprocess.run(cmd, check=True)
+    cmd = base_cmd + [str(playbook_path)]
+    subprocess.run(cmd, check=True)
 
 
 def setup_ansible_cmd(obj: AnsibleObj) -> list[str]:
@@ -31,5 +26,8 @@ def setup_ansible_cmd(obj: AnsibleObj) -> list[str]:
 
     if obj.tags:
         base_cmd.append(obj.tags)
+
+    if obj.skip_tags:
+        base_cmd.append(f"--skip-tags={','.join(obj.skip_tags)}")
 
     return base_cmd

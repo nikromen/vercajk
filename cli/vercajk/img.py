@@ -1,9 +1,10 @@
 import subprocess
+from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 from stat import S_IRGRP, S_IROTH, S_IRWXU, S_IXGRP, S_IXOTH
 from time import sleep
-from typing import Iterator, Optional
+from typing import Optional
 
 import libvirt
 from libvirt import virDomain
@@ -58,7 +59,7 @@ class Image:
             return None
 
         interface = domain.interfaceAddresses(
-            libvirt.VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE
+            libvirt.VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE,
         )
         print(interface.items())
         for key, val in interface.items():
@@ -81,8 +82,7 @@ class Image:
 
             self._domain.shutdown()
             print(
-                f"Waiting for {wait_seconds} seconds to shutdown "
-                f"domain {self._domain.name()}"
+                f"Waiting for {wait_seconds} seconds to shutdown domain {self._domain.name()}",
             )
             wait_seconds *= 2
             sleep(wait_seconds)
@@ -137,11 +137,12 @@ class Image:
             raise VercajkImageException(f"Not an iso file: {self.path}")
 
         with get_temporary_dir(
-            S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH
+            S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH,
         ) as tmp_dir:
             tmp_img = tmp_dir / f"{self.virt_name}.qcow2"
             subprocess.run(
-                ["qemu-img", "create", "-f", "qcow2", tmp_img, "20G"], check=True
+                ["qemu-img", "create", "-f", "qcow2", tmp_img, "20G"],
+                check=True,
             )
 
             cmd = (
@@ -168,7 +169,7 @@ class Image:
                         "-O",
                         "qcow2",
                         tmp_img,
-                        f"{str(dest)}/{self.virt_name}.qcow2",
+                        f"{dest!s}/{self.virt_name}.qcow2",
                     ],
                     check=True,
                 )
@@ -185,7 +186,7 @@ class Image:
             ["sudo"]
             + self._base_virt_install_cmd
             + [
-                f"--disk path={str(dest_path)},format=qcow2",
+                f"--disk path={dest_path!s},format=qcow2",
                 "--import",
             ]
         )
@@ -203,7 +204,7 @@ class Image:
     def fork_qcow2_tmp(self) -> Iterator[tuple[virDomain, Path]]:
         try:
             with get_temporary_dir(
-                S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH
+                S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH,
             ) as tmp_dir:
                 tmp_dest_path = self.fork_qcow2(tmp_dir)
                 yield self._domain, tmp_dest_path

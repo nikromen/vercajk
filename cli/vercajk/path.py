@@ -15,5 +15,5 @@ def vercajk_path() -> Path:
     if not VERCAJK_PATH.exists():
         raise FileNotFoundError(f"Vercajk path not defined in {VERCAJK_PATH}")
 
-    with open(VERCAJK_PATH, "r") as vercajk_path_f:
+    with open(VERCAJK_PATH) as vercajk_path_f:
         return Path(vercajk_path_f.readline().strip())

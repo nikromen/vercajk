@@ -2,7 +2,6 @@
 Generate scripts, etc. for fish from bash config dir.
 """
 
-
 import subprocess
 from os import getcwd
 from pathlib import Path
@@ -26,14 +25,14 @@ class Converterator3000:
             return
 
         lines_for_fish_variables = []
-        with open(var_file_path, "r") as var_file:
+        with open(var_file_path) as var_file:
             for line in var_file:
                 if line == "\n":
                     continue
 
                 line_to_parse = line.strip().split("=", 1)
                 lines_for_fish_variables.append(
-                    f"set {line_to_parse[0]} {line_to_parse[1]}"
+                    f"set {line_to_parse[0]} {line_to_parse[1]}",
                 )
 
         with open(self.store_to / "variables", "w") as fish_vars:
@@ -46,7 +45,7 @@ class Converterator3000:
             return
 
         process = subprocess.run(
-            ["bash", "-c", f". {str(scripts_file_path)}; compgen -A function"],
+            ["bash", "-c", f". {scripts_file_path!s}; compgen -A function"],
             stdout=subprocess.PIPE,
         )
         functions_to_call_in_bash = []
@@ -55,9 +54,7 @@ class Converterator3000:
             if not candidate.startswith("_"):
                 functions_to_call_in_bash.append(candidate)
 
-        fish_fn_template = (
-            "function {fn_name}\n" "    call_in_bash {fn_name} $argv\n" "end\n\n"
-        )
+        fish_fn_template = "function {fn_name}\n    call_in_bash {fn_name} $argv\nend\n\n"
         lines = []
         for fn in functions_to_call_in_bash:
             lines.append(fish_fn_template.format(fn_name=fn))

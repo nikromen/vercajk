@@ -44,13 +44,14 @@ const KeyboardWidget = () =>
         ],
     });
 
-
 export default () => {
     return PanelButton({
         class_name: "keyboard",
         on_primary_click: () => {
-            Utils.execAsync(`${Utils.HOME}/.config/hypr/de/scripts/keyboard_layout.sh`);
+            Utils.execAsync(
+                `${Utils.HOME}/.config/hypr/de/scripts/keyboard_layout.sh`,
+            );
         },
         child: KeyboardWidget(),
     });
-}
+};

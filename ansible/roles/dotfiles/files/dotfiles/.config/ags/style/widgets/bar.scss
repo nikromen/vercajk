@@ -42,7 +42,7 @@ $button-radius: $radius;
         }
 
         &:hover {
-            background-color: #29222C;
+            background-color: #29222c;
             color: transparentize($fg, 0.8);
         }
     }
@@ -58,8 +58,8 @@ $button-radius: $radius;
             background-color: transparentize($fg, 0.8);
 
             &:hover {
-                background-color: #29222C;
-                color: #EDCBED;
+                background-color: #29222c;
+                color: #edcbed;
             }
 
             &.occupied {
@@ -75,8 +75,8 @@ $button-radius: $radius;
 
         // TODO: how to make it part of event-box?
         .ws-box:hover {
-            background-color: #29222C;
-            color: #EDCBED;
+            background-color: #29222c;
+            color: #edcbed;
 
             min-width: 20pt;
             min-height: 20pt;

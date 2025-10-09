@@ -1,8 +1,9 @@
 ---
 - name: Play the dotfiles role on specified hosts under username
-  hosts: "{{ hosts }}"
+  hosts: localhost
   become: true
-  become_user: "{{ ansible_user }}"
+  # TODO: make this dynamic
+  become_user: nikromen
 
   roles:
     - role: dotfiles

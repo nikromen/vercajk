@@ -83,7 +83,9 @@ class WorkspaceManager {
             child: label,
             class_name: "ws-box",
             on_primary_click: () => {
-                Utils.execAsync(`${Utils.HOME}/.config/hypr/de/scripts/workspaces.sh --new ${workspaceLabel}`);
+                Utils.execAsync(
+                    `${Utils.HOME}/.config/hypr/de/scripts/workspaces.sh --new ${workspaceLabel}`,
+                );
             },
         }).hook(hyprland, (self) => {
             self.visible = this.isWorkspaceVisible(workspaceAttribute);

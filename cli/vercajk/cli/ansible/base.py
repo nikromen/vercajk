@@ -1,26 +1,10 @@
-import os
-
 import click
 from click import Choice, Context, pass_context
 
 from vercajk.ansible import AnsibleObj
 from vercajk.cli.ansible.dotfiles import dotfiles
-from vercajk.cli.ansible.system import system
+from vercajk.cli.ansible.one_timers import one_timers
 from vercajk.cli.ansible.update import update
-from vercajk.cli.ansible.user import user
-
-
-def _get_user_host_d(targets: tuple[str]) -> dict[str, list[str]]:
-    result: dict[str, list[str]] = {}
-    for target in targets:
-        split_target = [item.strip() for item in target.split(",")]
-        host, user = split_target[0], split_target[1]
-        if result.get(user):
-            result[user].append(host)
-        else:
-            result[user] = [host]
-
-    return result
 
 
 @click.group("ansible")
@@ -34,45 +18,31 @@ def _get_user_host_d(targets: tuple[str]) -> dict[str, list[str]]:
     ),
 )
 @click.option(
-    "-r",
-    "--target",
-    type=str,
-    required=False,
-    multiple=True,
-    help=(
-        "Specify host and user for which this has to be run separated"
-        " by colon, e.g. localhost,nikromen."
-    ),
-)
-@click.option(
     "-t",
     "--tag",
     type=Choice([]),
     multiple=True,
     help="Select tags to be passed to ansible playbook.",
 )
+@click.option(
+    "--skip-tag",
+    "-s",
+    type=Choice([]),
+    multiple=True,
+    help="Select tags to be skipped in ansible playbook.",
+)
 @pass_context
-def ansible(ctx: Context, verbose: int, target: tuple[str], tag: tuple[str]):
+def ansible(ctx: Context, verbose: int, tag: tuple[str], skip_tag: tuple[str]):
     """
-    Run different ansible playbooks to the host to configure the system.
+    Run different ansible playbooks to the localhost.
     """
     verbose_str = ""
     if verbose != 0:
         verbose_str = "-" + (verbose * "v")
 
-    if target:
-        user_host_d = _get_user_host_d(target)
-    else:
-        user_host_d = {os.getlogin(): ["localhost"]}
-
-    tags = ""
-    if tag:
-        tags = ",".join(tag)
-
-    ctx.obj = AnsibleObj(verbose_str, user_host_d, tags)
+    ctx.obj.ansible_ctx = AnsibleObj(verbose_str, tag, skip_tag)
 
 
 ansible.add_command(dotfiles)
-ansible.add_command(system)
+ansible.add_command(one_timers)
 ansible.add_command(update)
-ansible.add_command(user)

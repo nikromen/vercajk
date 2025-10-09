@@ -1,4 +1,4 @@
-#version=F43
+#version=F42
 # This is a generated kickstart file for vercajk installation
 {% if tags is defined and tags|length > 0 %}
 # This kickstart includes the following tags: {{ tags }}
@@ -21,8 +21,8 @@ autopart
 clearpart --none --initlabel
 
 # Default user configuration
-rootpw --iscrypted
-user --name=nikromen --groups=wheel --gecos="nikromen"
+rootpw --plaintext fedora
+user --name=nikromen --groups=wheel --gecos="nikromen" --password fedora
 
 # Enable basic services
 services --enabled="NetworkManager,sshd,firewalld,tuned"
@@ -213,6 +213,8 @@ dnf -y check-update || true
 dnf -y install pycharm-community code
 {% endif %}
 
+# Ansible configuration of the system
+
 # Create temporary directory for installation process
 mkdir -p /tmp/vercajk-install
 mkdir -p /tmp/vercajk-status
@@ -237,6 +239,19 @@ mkdir -p /tmp/vercajk-install/callback_plugins
 dnf -y install git
 git clone https://github.com/nikromen/vercajk.git /tmp/vercajk-repo
 cp -r /tmp/vercajk-repo/ansible/* /tmp/vercajk-install/
+
+# Install the vercajk CLI and set up the repository path
+dnf -y copr enable nikromen/vercajk
+dnf -y install vercajk-cli
+
+# Create directory for vercajk config
+mkdir -p /root/.local/share/vercajk
+echo "/tmp/vercajk-repo" > /root/.local/share/vercajk/vercajk_path
+
+# Create directory for nikromen user's vercajk config
+mkdir -p /home/nikromen/.local/share/vercajk
+echo "/tmp/vercajk-repo" > /home/nikromen/.local/share/vercajk/vercajk_path
+chown -R nikromen:nikromen /home/nikromen/.local/share/vercajk
 
 # Create local Ansible config
 cat > /tmp/vercajk-install/ansible.cfg << EOF
@@ -294,12 +309,9 @@ ConditionPathExists=!/tmp/vercajk-status/one-timers-completed
 
 [Service]
 Type=oneshot
-Environment="PYTHONPATH=/tmp/vercajk-install/python-libs"
-Environment="ANSIBLE_CONFIG=/tmp/vercajk-install/ansible.cfg"
-Environment="ANSIBLE_COLLECTIONS_PATH=/tmp/vercajk-install/collections"
-WorkingDirectory=/tmp/vercajk-install
+WorkingDirectory=/tmp
 ExecStartPre=/usr/local/bin/vercajk-plymouth-wrapper /usr/bin/plymouth display-message --text="Setting up vercajk system: Running one-time system configurations..."
-ExecStart=/bin/bash -c '/usr/bin/plymouth display-message --text="Running system configuration tasks..." && /usr/bin/plymouth change-mode --updates && /usr/bin/ansible-playbook /tmp/vercajk-install/play_one_timers.yml && /usr/bin/plymouth change-mode --system-boot'
+ExecStart=/bin/bash -c '/usr/bin/plymouth display-message --text="Running system configuration tasks..." && /usr/bin/plymouth change-mode --updates && /usr/bin/vercajk ansible system && /usr/bin/plymouth change-mode --system-boot'
 ExecStartPost=/usr/bin/mkdir -p /tmp/vercajk-status
 ExecStartPost=/usr/bin/touch /tmp/vercajk-status/one-timers-completed
 ExecStartPost=/usr/local/bin/vercajk-plymouth-wrapper /usr/bin/plymouth display-message --text="System configurations completed!"
@@ -322,12 +334,9 @@ User=nikromen
 Group=nikromen
 Environment="ANSIBLE_USER=nikromen"
 Environment="USER=nikromen"
-Environment="PYTHONPATH=/tmp/vercajk-install/python-libs"
-Environment="ANSIBLE_CONFIG=/tmp/vercajk-install/ansible.cfg"
-Environment="ANSIBLE_COLLECTIONS_PATH=/tmp/vercajk-install/collections"
-WorkingDirectory=/tmp/vercajk-install
+WorkingDirectory=/tmp
 ExecStartPre=/bin/bash -c '/usr/bin/plymouth display-message --text="Setting up dotfiles for user nikromen..."'
-ExecStart=/bin/bash -c '/usr/bin/plymouth change-mode --updates && /usr/bin/ansible-playbook -e "hosts=localhost ansible_user=nikromen" /tmp/vercajk-install/play_dotfiles.yml && /usr/bin/plymouth change-mode --system-boot'
+ExecStart=/bin/bash -c '/usr/bin/plymouth change-mode --updates && /usr/bin/vercajk ansible dotfiles && /usr/bin/plymouth change-mode --system-boot'
 ExecStartPost=/usr/bin/mkdir -p /tmp/vercajk-status
 ExecStartPost=/usr/bin/touch /tmp/vercajk-status/dotfiles-completed
 ExecStartPost=/bin/bash -c '/usr/bin/plymouth display-message --text="User dotfiles configuration completed!"'
