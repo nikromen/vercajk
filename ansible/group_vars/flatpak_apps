@@ -15,10 +15,11 @@ core:
   - io.github.giantpinkrobots.flatsweep
   - org.kde.isoimagewriter
   - org.kde.kcalc
-  - org.mozilla.firefox
   - org.videolan.VLC
   - org.kde.gwenview
   - org.kde.okular
+  - org.kde.kate
+  - io.missioncenter.MissionCenter
 
 communication:
   - com.sindresorhus.Caprine

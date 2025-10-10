@@ -9,10 +9,6 @@
 # GUI installation for disk partitioning, user setup, and password configuration
 graphical
 
-# Basic system configuration
-keyboard --xlayouts='us','cz (qwerty)'
-lang en_US.UTF-8
-
 # Set locales
 keyboard --xlayouts='us','cz (qwerty)'
 lang en_US.UTF-8
@@ -73,6 +69,11 @@ ffmpeg-free
 adw-gtk3-theme
 mediawriter
 fontawesome-fonts
+# TODO: greetd config and greeter user
+greetd
+tuigreet
+# TODO: once flatpak firefox is usable, move
+firefox
 
 # Hyprland - base of the desktop
 hyprland
@@ -151,7 +152,9 @@ git-filter-repo
 # Post-installation scripts
 %post
 # Set locale variables
+# TODO: do this via anaconda?
 cat > /etc/locale.conf << EOF
+LANG=en_US.UTF-8
 LC_ADDRESS=cs_CZ.UTF-8
 LC_NAME=cs_CZ.UTF-8
 LC_MONETARY=cs_CZ.UTF-8
@@ -184,11 +187,7 @@ dnf -y install nerd-fonts
 
 # TODO: remove this once these are in fedora
 dnf -y copr enable solopasha/hyprland
-dnf -y install hyprsunset \  # blue light filter
-    aylurs-gtk-shell \       # widgets
-    swww \                   # wallpaper deamon
-    hyprlock \               # lock deamon
-    hypridle                 # idle daemon
+dnf -y install hyprsunset aylurs-gtk-shell swww hyprlock hypridle
 {% endif %}
 
 # Configure VS Code repository
