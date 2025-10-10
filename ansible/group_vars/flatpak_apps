@@ -22,7 +22,6 @@ core:
   - io.missioncenter.MissionCenter
 
 communication:
-  - com.sindresorhus.Caprine
   - com.discordapp.Discord
   - org.signal.Signal
   - org.telegram.desktop
