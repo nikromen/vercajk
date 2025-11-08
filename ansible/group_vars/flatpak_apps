@@ -8,7 +8,7 @@ core:
   - com.github.tchx84.Flatseal
   - org.gnome.Firmware
   - com.gitlab.bitseater.meteo
-  - dev.heppen.webapps
+  # TODO: some webapp manager... the quick web app is now unusable :/
   - org.kde.ark
   # dolphin in flatpak is still missing a lot of features :/
   # - org.kde.dolphin
@@ -35,7 +35,7 @@ multimedia:
 development_tools:
   - rest.insomnia.Insomnia
   - io.podman_desktop.PodmanDesktop
-  - io.qt.Designer
+  - io.qt.QtCreator
   - com.jgraph.drawio.desktop
 
 games:
@@ -47,3 +47,4 @@ productivity:
   - org.libreoffice.LibreOffice
   - org.mozilla.Thunderbird
   - net.cozic.joplin_desktop
+  - com.super_productivity.SuperProductivity
