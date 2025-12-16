@@ -11,6 +11,9 @@ get_remote() {
         "u")
             echo "upstream"
             ;;
+        "")
+            echo ""
+            ;;
         *)
             echo "$1"
             ;;

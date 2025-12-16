@@ -1,0 +1,15 @@
+# Ignore everything by default
+*
+
+# But track our custom scripts
+!.gitignore
+!container-purge
+!desktop-start
+!gp
+!grf
+!lsg
+!prm
+!restart-hyprlock
+!restart-plasma
+!set-theme
+!mock-container

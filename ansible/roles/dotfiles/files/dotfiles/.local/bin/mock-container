@@ -1,0 +1,122 @@
+#!/usr/bin/env python3
+
+import subprocess
+import sys
+from pathlib import Path
+from typing import Optional
+
+import click
+
+
+@click.command(
+    context_settings=dict(ignore_unknown_options=True, allow_extra_args=True)
+)
+@click.option(
+    "--image",
+    default="fedora:latest",
+    help="Container image to use for the build",
+)
+@click.option(
+    "--container-name",
+    default=None,
+    help="Name of a persistent container reused across runs",
+)
+@click.option(
+    "--trusted",
+    is_flag=True,
+    help="Bind mount host /etc/mock into container /etc/mock as read-only + mock config",
+)
+@click.option(
+    "--no-resultdir",
+    is_flag=True,
+    help="Disable bind mounting of the results directory",
+)
+@click.option(
+    "--sh",
+    is_flag=True,
+    help="Keep an interactive shell open inside the container after build",
+)
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    help="Print the Podman command without executing it",
+)
+@click.pass_context
+def main(
+    ctx: click.Context,
+    image: str,
+    container_name: Optional[str],
+    trusted: bool,
+    no_resultdir: bool,
+    sh: bool,
+    dry_run: bool,
+) -> None:
+    podman_cmd = ["podman", "run"]
+    if container_name:
+        podman_cmd.extend(["--name", container_name])
+    else:
+        podman_cmd.append("--rm")
+
+    if sh:
+        podman_cmd.append("-ti")
+
+    pwd = Path.cwd().resolve()
+    podman_cmd.extend(
+        [
+            "--privileged",
+            "-v",
+            f"{pwd}:/src:ro",
+        ]
+    )
+
+    if not no_resultdir:
+        results_dir = pwd / "results"
+        results_dir.mkdir(exist_ok=True)
+        podman_cmd.extend(["-v", f"{results_dir}:/results:rw"])
+
+    if trusted:
+        host_mock_config = Path("/etc/mock").resolve()
+        if host_mock_config.exists():
+            podman_cmd.extend(["-v", "/etc/mock:/etc/mock:ro"])
+
+        mock_conf = (Path.home() / ".config" / "mock.conf").resolve()
+        if mock_conf.exists():
+            podman_cmd.extend(["-v", f"{mock_conf}:/etc/mock/mock.conf:ro"])
+
+    podman_cmd.extend(
+        [
+            "-w",
+            "/src",
+            image,
+            "/bin/bash",
+            "-c",
+        ]
+    )
+
+    setup_commands = [
+        "dnf install -y mock",
+        "useradd mockbuilder",
+        "usermod -a -G mock mockbuilder",
+    ]
+
+    mock_commands = ["mock"]
+    if not no_resultdir:
+        mock_commands.append("--resultdir=/results")
+    if ctx.args:
+        mock_commands.extend(ctx.args)
+
+    mock_command = " ".join(mock_commands)
+    entry_command = " && ".join(setup_commands + ["su - mockbuilder", mock_command])
+    if sh:
+        entry_command += "; exec /bin/bash"
+
+    podman_cmd.append(entry_command)
+    print(" ".join(podman_cmd))
+
+    if not dry_run:
+        result = subprocess.run(podman_cmd)
+        sys.exit(result.returncode)
+
+
+if __name__ == "__main__":
+    main()

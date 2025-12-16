@@ -1,157 +1,176 @@
-#!/bin/bash
+#!/usr/bin/env python3
+
+from __future__ import annotations
+
+import subprocess
+from dataclasses import dataclass
+from typing import Optional
+
+import click
 
 
-set -e
+@dataclass
+class PodmanObjectType:
+    name: str
+    list_cmd: list[str]
+    delete_cmd: list[str]
+    # this is only for images but whatever...
+    display_format: Optional[str] = None
 
-usage() {
-    echo "Usage: $0 [OPTIONS] PATTERN
-    -h, --help      Display this help and exit
-    -p, --podman    Use podman
-    -d, --docker    Use docker
-    -f, --force
-    --prune         Prune everything
-    "
-}
 
-confirm_deletion() {
-    local to_delete="$1"
-    local kind="$2"
-    if [ "$kind" = "images" ]; then
-        to_delete=$(eval "$CONTAINER_RUNTIME image ls -a --format '{{.Repository}}:{{.Tag}}    {{.ID}}' --filter reference='*$PATTERN*'")
-    fi
-
-    printf "Are you sure you want to delete the following $kind?\n$to_delete\n[y/N]: "
-    read -r response
-    if [ "$response" = "y" ]; then
-        return 0
-    fi
-    return 1
-}
-
-# sometimes bulk deletion fails, idk why, this is dumb proof
-delete_in_loop() {
-    local objects_to_delete="$1"
-    local command="$2"
-    for to_delete in $objects_to_delete; do
-        eval "$command $FORCE $to_delete"
-        echo "Deleted $object_type $to_delete"
-    done
-}
-
-delete_con() {
-    local objects_to_delete="$1"
-    local object_type="$2"
-    local command=""
-    if confirm_deletion "$objects_to_delete" "$object_type"; then
-        case "$object_type" in
-            "containers")
-                command="$CONTAINER_RUNTIME rm"
-                ;;
-            "images")
-                command="$CONTAINER_RUNTIME image rm"
-                ;;
-            "volumes")
-                command="$CONTAINER_RUNTIME volume rm"
-                ;;
-            "networks")
-                command="$CONTAINER_RUNTIME network rm"
-                ;;
-        esac
-        delete_in_loop "$objects_to_delete" "$command"
-    fi
-}
-
-purge() {
-    # append pattern to these
-    declare -A object_types=(
-        ["containers"]="ps -qa --filter name"
-        ["images"]="image ls -qa"
-        ["volumes"]="volume ls -q --filter name"
-        ["networks"]="network ls -q --filter name"
+def run_command(cmd: list[str]) -> str:
+    result = subprocess.run(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        check=False,
     )
+    return result.stdout.strip()
 
-    for object_type in "${!object_types[@]}"; do
-        local command="${object_types[$object_type]}"
-        local objects_to_delete=""
-        if [ "$object_type" = "images" ]; then
-            objects_to_delete=$(eval "$CONTAINER_RUNTIME $command '*$PATTERN*'")
-        else
-            objects_to_delete=$(eval "$CONTAINER_RUNTIME $command=$PATTERN")
-        fi
 
-        if [ -z "$objects_to_delete" ]; then
-            echo "No $object_type found matching pattern $PATTERN"
-        else
-            delete_con "$objects_to_delete" "$object_type" "$CONTAINER_RUNTIME"
-        fi
-    done
-}
+def get_display_output(
+    pattern: str, obj_type: PodmanObjectType, objects: list[str]
+) -> str:
+    if obj_type.display_format:
+        return run_command(
+            [
+                "podman",
+                "image",
+                "ls",
+                "-a",
+                "--format",
+                obj_type.display_format,
+                "--filter",
+                f"reference=*{pattern}*",
+            ]
+        )
 
-prune() {
-    echo "Pruning all containers, images, volumes, and networks"
-    $CONTAINER_RUNTIME system prune $FORCE
-    $CONTAINER_RUNTIME volume prune $FORCE
-    $CONTAINER_RUNTIME network prune $FORCE
-    $CONTAINER_RUNTIME image prune $FORCE
-}
+    return "\n".join(objects)
 
-main() {
-    local podman=false
-    local docker=false
-    local prune=false
 
-    while [ "$#" -gt 0 ]; do
-        case "$1" in
-            -h|--help)
-                usage
-                exit 0
-                ;;
-            -p|--podman)
-                podman=true
-                ;;
-            -d|--docker)
-                docker=true
-                ;;
-            --prune)
-                prune=true
-                ;;
-            -f|--force)
-                FORCE=" --force"
-                ;;
-            *)
-                break
-                ;;
-        esac
-        shift
-    done
+def confirm_deletion(
+    pattern: str, obj_type: PodmanObjectType, objects: list[str]
+) -> bool:
+    display = get_display_output(pattern, obj_type, objects)
+    click.echo(f"\nThe following {obj_type.name} will be deleted:")
+    click.echo(display)
+    return click.confirm("\nContinue?", default=False)
 
-    if [ "$podman" = true ] && [ "$docker" = true ]; then
-        echo "Error: Cannot use both podman and docker"
-        exit 1
-    fi
 
-    if [ "$podman" = false ] && [ "$docker" = false ]; then
-        echo "Error: Must specify either podman or docker"
-        exit 1
-    fi
+def delete_objects_batch(
+    objects: list[str],
+    obj_type: PodmanObjectType,
+    force: bool,
+) -> None:
+    for obj in objects:
+        cmd = [*obj_type.delete_cmd]
+        if force:
+            cmd.append("--force")
 
-    CONTAINER_RUNTIME="sudo docker"
-    if [ "$podman" = true ]; then
-        CONTAINER_RUNTIME="podman"
-    fi
+        cmd.append(obj)
 
-    if [ "$prune" = true ]; then
-        prune
-        exit 0
-    fi
+        result = subprocess.run(cmd, check=False, capture_output=True, text=True)
+        if result.returncode == 0:
+            click.echo(f"✓ Deleted {obj_type.name[:-1]}: {obj}")
+        else:
+            click.echo(f"✗ Failed to delete {obj_type.name[:-1]}: {obj}", err=True)
 
-    if [ "$#" -ne 1 ]; then
-        echo "Error: Must specify exactly one pattern"
-        exit 1
-    fi
 
-    PATTERN="$1"
-    purge
-}
+def process_object_type(
+    pattern: str,
+    obj_type: PodmanObjectType,
+    force: bool,
+) -> None:
+    output = run_command(obj_type.list_cmd)
+    if not output:
+        click.echo(f"No {obj_type.name} found matching pattern: {pattern}")
+        return
 
-main "$@"
+    objects = output.split()
+    click.echo(f"\nFound {len(objects)} {obj_type.name} matching pattern: {pattern}")
+
+    if confirm_deletion(pattern, obj_type, objects):
+        delete_objects_batch(objects, obj_type, force)
+    else:
+        click.echo(f"Skipped {obj_type.name}")
+
+
+def purge_by_pattern(pattern: str, force: bool) -> None:
+    object_types = [
+        PodmanObjectType(
+            name="containers",
+            list_cmd=["podman", "ps", "-qa", "--filter", f"name={pattern}"],
+            delete_cmd=["podman", "rm"],
+        ),
+        PodmanObjectType(
+            name="images",
+            list_cmd=["podman", "image", "ls", "-qa", f"*{pattern}*"],
+            delete_cmd=["podman", "image", "rm"],
+            display_format="{{.Repository}}:{{.Tag}}    {{.ID}}",
+        ),
+        PodmanObjectType(
+            name="volumes",
+            list_cmd=["podman", "volume", "ls", "-q", "--filter", f"name={pattern}"],
+            delete_cmd=["podman", "volume", "rm"],
+        ),
+        PodmanObjectType(
+            name="networks",
+            list_cmd=["podman", "network", "ls", "-q", "--filter", f"name={pattern}"],
+            delete_cmd=["podman", "network", "rm"],
+        ),
+    ]
+
+    for obj_type in object_types:
+        process_object_type(pattern, obj_type, force)
+
+
+def prune_all(force: bool) -> None:
+    """Prune all unused Podman resources."""
+    click.echo("Pruning all unused containers, images, volumes, and networks...")
+
+    prune_commands = [
+        ["podman", "system", "prune"],
+        ["podman", "volume", "prune"],
+        ["podman", "network", "prune"],
+        ["podman", "image", "prune"],
+    ]
+
+    for cmd in prune_commands:
+        if force:
+            cmd.append("--force")
+        subprocess.run(cmd, check=False)
+
+
+@click.command(context_settings={"help_option_names": ["-h", "--help"]})
+@click.option(
+    "-f",
+    "--force",
+    is_flag=True,
+    help="Force deletion without confirmation prompts",
+)
+@click.option(
+    "--prune",
+    is_flag=True,
+    help="Prune all unused resources instead of matching by pattern",
+)
+@click.argument("pattern", required=False)
+def main(force: bool, prune: bool, pattern: str | None) -> None:
+    """Delete Podman containers, images, volumes, and networks matching PATTERN.
+
+    \b
+    Examples:
+      container-purge myapp        # Delete all resources matching 'myapp'
+      container-purge -f postgres  # Force delete postgres resources
+      container-purge --prune      # Prune all unused resources
+    """
+    if prune:
+        prune_all(force)
+    elif pattern:
+        purge_by_pattern(pattern, force)
+    else:
+        raise click.UsageError("Must specify PATTERN or use --prune")
+
+
+if __name__ == "__main__":
+    main()

@@ -5,19 +5,24 @@ source $HOME/.local/share/vercajk/bash_functions/bash_private_functions.sh
 
 set -e
 
-remote=$(get_remote "$@")
-if ! [ -z "$remote" ]; then
+if [[ -n "$1" ]]; then
+    remote=$(get_remote "$1")
     shift
 else
     remote="origin"
 fi
 
-if ! [ -z "$1" ]; then
-    git push -u "$remote" "$@"
+if [[ -n "$1" ]]; then
+    git push "$remote" "$@"
     exit 0
 fi
 
-branch=$(git branch --show-current)
+if [[ -n "$1" ]]; then
+    branch="$1"
+else
+    branch=$(git branch --show-current)
+fi
+
 main=$(get_default_main_branch)
 if [[ "$branch" = "$main" ]]; then
     echo "You are going to push to ${remote}/${main} branch"
@@ -25,4 +30,4 @@ if [[ "$branch" = "$main" ]]; then
     sleep 5
 fi
 
-git push -u "$remote" "$branch"
+git push "$remote" "$branch"

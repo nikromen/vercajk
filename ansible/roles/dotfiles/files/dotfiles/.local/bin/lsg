@@ -10,4 +10,4 @@ usage() {
     "
 }
 
-ls -lha --color=auto | grep "$1"
+ls -lhaZ --color=auto | grep "$1"
