@@ -1,0 +1,4 @@
+---
+# Override this via -e or in inventory to target a different user
+target_user: "{{ lookup('env', 'USER') | default('nikromen', true) }}"
+home_dir: "/home/{{ target_user }}"

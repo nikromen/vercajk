@@ -1,0 +1,64 @@
+---
+- name: System-level flatpak setup
+  become: true
+  become_user: root
+  block:
+    - name: Enable flathub for system repo
+      community.general.flatpak_remote:
+        name: flathub
+        state: present
+        flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+        method: system
+
+    - name: Install core flatpak apps
+      community.general.flatpak:
+        name: "{{ item }}"
+        state: present
+        method: system
+      loop: "{{ core }}"
+
+    - name: Install communication apps
+      community.general.flatpak:
+        name: "{{ item }}"
+        state: present
+        method: system
+      loop: "{{ communication }}"
+
+    - name: Install dev tools
+      community.general.flatpak:
+        name: "{{ item }}"
+        state: present
+        method: system
+      loop: "{{ development_tools }}"
+      tags:
+        - development_tools
+
+    - name: Install multimedia tools
+      community.general.flatpak:
+        name: "{{ item }}"
+        state: present
+        method: system
+      loop: "{{ multimedia }}"
+
+    - name: Install productivity apps
+      community.general.flatpak:
+        name: "{{ item }}"
+        state: present
+        method: system
+      loop: "{{ productivity }}"
+
+- name: Enable flathub for user repo
+  community.general.flatpak_remote:
+    name: flathub
+    state: present
+    flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+    method: user
+
+- name: Install games
+  community.general.flatpak:
+    name: "{{ item }}"
+    state: present
+    method: user
+  loop: "{{ games }}"
+  tags:
+    - games

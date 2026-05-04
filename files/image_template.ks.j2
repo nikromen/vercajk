@@ -1,0 +1,240 @@
+#version=F{{ fedora_version | default(43) }}
+# This is a generated kickstart file for vercajk installation
+{% if tags is defined and tags|length > 0 %}
+# This kickstart includes the following tags: {{ tags }}
+{% else %}
+# No specific tags provided - full installation
+{% endif %}
+
+# GUI installation for disk partitioning, user setup, and password configuration
+graphical
+
+# Set locales
+keyboard --vckeymap=us --xlayouts='us','cz (qwerty)'
+lang en_US.UTF-8
+timezone Europe/Prague --utc
+
+# Disk partitioning - interactive (done via GUI)
+# Remove autopart and clearpart to allow manual partitioning
+# The installer will prompt for disk partitioning during installation
+
+# User configuration - interactive (done via GUI)
+# The installer will prompt for root password and user creation
+
+# Enable basic services
+services --enabled="NetworkManager,sshd,firewalld,tuned"
+
+# Run the Setup Agent on first boot
+firstboot --enable
+
+# Reboot after installation
+reboot
+
+# Package selection
+%packages
+
+# Core system packages
+@core
+@hardware-support
+glibc-langpack-en
+glibc-langpack-cs
+htop
+lm_sensors
+alacritty
+fzf
+cronie
+btop
+tree
+plymouth
+plymouth-system-theme
+stow
+tmux
+firewalld
+neovim
+acl
+
+{% if "desktop" in tags|default([]) or not tags|default([]) %}
+@fonts
+@networkmanager-submodules
+@multimedia
+fish
+lua
+lua-json
+openconnect
+openvpn
+fastfetch
+tuned
+tuned-ppd
+flatpak
+ocrmypdf
+ffmpeg-free
+adw-gtk3-theme
+mediawriter
+fontawesome-fonts
+greetd
+# TODO: once flatpak firefox is usable, move
+firefox
+nmtui
+papirus-icon-theme
+papirus-icon-theme-dark
+papirus-icon-theme-light
+
+# Hyprland dependencies (hyprland itself installed from COPR in %post)
+rofi                    # launcher
+wlogout                 # logout manager
+pavucontrol             # audio +- control
+wireplumber             # audio routing
+polkit                  # authorization service
+playerctl               # media player control
+blueman                 # bluetooth manager
+brightnessctl           # screen brightness control
+flameshot               # screenshot tool
+copyq                   # copy server
+wl-clipboard            # clipboard manager for wayland
+jq                      # json processor for my scripts
+bc                      # calculator for my scripts
+qalculate               # advanced calculator engine (rofi-calc)
+translate-shell         # Google Translate CLI (rofi-translate)
+wf-recorder             # screen recording for wayland (rofi-recorder)
+slurp                   # region selector for wayland (rofi-recorder)
+libnotify               # notification send/recv
+waybar                  # static bar
+network-manager-applet  # nmcli tray
+SwayNotificationCenter  # another cool notification center
+darkman                 # dark/light theme switcher daemon
+xdg-desktop-portal-gtk # GTK portal backend (Settings portal for color-scheme)
+{% endif %}
+
+# Can stand on base desktop
+{% if "kde" in tags|default([]) or not tags|default([]) %}
+@kde-desktop
+{% endif %}
+
+# Development tools
+{% if "development_tools" in tags|default([]) or not tags|default([]) %}
+# Container and virtualization
+@container-management
+@virtualization
+docker-compose
+podman-docker
+
+# Development applications
+valgrind
+gdb
+cppcheck
+pre-commit
+luarocks
+cmake
+make
+just
+
+# RPM and work related tools
+@fedora-packager
+copr-cli
+packit
+fedpkg
+rpmdevtools
+
+# Programming languages
+gcc
+gcc-c++
+golang
+rust
+cargo
+
+# Python development
+python3-pip
+python3-devel
+krb5-devel
+poetry
+uv
+black
+
+# VCS
+git
+git-subtree
+git-filter-repo
+{% endif %}
+
+%end
+
+# Post-installation scripts
+%post
+# Set locale variables
+# TODO: do this via anaconda?
+cat > /etc/locale.conf << EOF
+LANG=en_US.UTF-8
+LC_ADDRESS=cs_CZ.UTF-8
+LC_NAME=cs_CZ.UTF-8
+LC_MONETARY=cs_CZ.UTF-8
+LC_TIME=cs_CZ.UTF-8
+LC_NUMERIC=cs_CZ.UTF-8
+LC_TELEPHONE=cs_CZ.UTF-8
+LC_MEASUREMENT=cs_CZ.UTF-8
+EOF
+
+# Setup shared-documents directory for everyone in shared-documents group
+{% if "multi_user" in tags|default([]) or not tags|default([]) %}
+groupadd shared-documents
+mkdir -p /srv/shared-documents
+chown :shared-documents /srv/shared-documents
+chmod 2770 /srv/shared-documents
+setfacl -d -m g:shared-documents:rwx /srv/shared-documents
+setfacl -m g:shared-documents:rwx /srv/shared-documents
+{% endif %}
+
+# RPM Fusion
+dnf -y install "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ fedora_version | default(43) }}.noarch.rpm"
+dnf -y install "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ fedora_version | default(43) }}.noarch.rpm"
+
+dnf -y upgrade --refresh
+
+# Enable required COPR repositories
+{% if "desktop" in tags|default([]) or not tags|default([]) %}
+dnf -y copr enable che/nerd-fonts
+dnf -y install nerd-fonts
+
+# TODO: remove this once these are in fedora
+dnf -y copr enable nikromen/hyprland
+dnf -y install hyprland hyprland-devel hyprsunset hyprlock hypridle hyprpolkitagent hyprcursor hyprpicker xdg-desktop-portal-hyprland awww
+{% endif %}
+
+# Configure VS Code repository
+{% if "development_tools" in tags|default([]) or not tags|default([]) %}
+rpm --import https://packages.microsoft.com/keys/microsoft.asc
+cat > /etc/yum.repos.d/vscode.repo << EOF
+[code]
+name=Visual Studio Code
+baseurl=https://packages.microsoft.com/yumrepos/vscode
+enabled=1
+gpgcheck=1
+gpgkey=https://packages.microsoft.com/keys/microsoft.asc
+EOF
+
+dnf -y copr enable phracek/PyCharm
+
+# IDEs
+dnf -y check-update || true
+dnf -y install pycharm-community code
+{% endif %}
+
+# This tool itself
+dnf -y copr enable nikromen/vercajk
+dnf -y install vercajk-cli git
+
+# Install first-boot provisioning service (self-cleaning)
+# Source files: files/vercajk-firstboot.{service,sh}
+cat > /etc/systemd/system/vercajk-firstboot.service << 'SERVICEEOF'
+{% include 'vercajk-firstboot.service' %}
+SERVICEEOF
+
+touch /etc/vercajk-firstboot
+
+cat > /usr/local/bin/vercajk-firstboot.sh << 'SCRIPTEOF'
+{% include 'vercajk-firstboot.sh' %}
+SCRIPTEOF
+
+chmod +x /usr/local/bin/vercajk-firstboot.sh
+systemctl enable vercajk-firstboot.service
+
+%end

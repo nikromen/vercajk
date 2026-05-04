@@ -1,0 +1,21 @@
+---
+- name: Configure greetd with agreety
+  become: true
+  become_user: root
+  copy:
+    dest: /etc/greetd/config.toml
+    mode: "0644"
+    content: |
+      [terminal]
+      vt = 1
+
+      [default_session]
+      command = "agreety --cmd start-hyprland"
+      user = "greetd"
+
+- name: Enable greetd service
+  become: true
+  become_user: root
+  systemd:
+    name: greetd
+    enabled: true

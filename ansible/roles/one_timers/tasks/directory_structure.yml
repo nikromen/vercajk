@@ -1,0 +1,33 @@
+---
+- name: Create folders in root of Documents
+  file:
+    path: "{{ home_dir }}/Documents/{{ item }}"
+    state: directory
+    mode: "0755"
+  with_items:
+    - "{{ docs_root_dirs }}"
+
+- name: Create directories for git forges
+  file:
+    path: "{{ home_dir }}/Documents/git/{{ item }}"
+    state: directory
+    mode: "0755"
+  with_items:
+    - "{{ git_forges }}"
+
+- name: Create rpm folder hierarchy inside Documents
+  file:
+    path: "{{ home_dir }}/Documents/rpm/{{ item }}"
+    state: directory
+    mode: "0755"
+  with_items:
+    - "{{ rpm_docs_dirs }}"
+
+- name: Create directories for compiling software from source
+  file:
+    path: "{{ home_dir }}/Documents/src/{{ item }}"
+    state: directory
+    mode: "0755"
+  with_items:
+    - local
+    - global

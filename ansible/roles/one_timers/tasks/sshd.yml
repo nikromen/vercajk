@@ -1,0 +1,16 @@
+---
+- name: Deploy sshd hardening drop-in config
+  become: true
+  become_user: root
+  copy:
+    dest: /etc/ssh/sshd_config.d/00-hardening.conf
+    mode: "0600"
+    content: |
+      PermitRootLogin no
+      PasswordAuthentication no
+      KbdInteractiveAuthentication no
+      MaxAuthTries 3
+      AllowAgentForwarding no
+      AllowTcpForwarding no
+      X11Forwarding no
+  notify: Restart sshd

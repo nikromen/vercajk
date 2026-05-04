@@ -1,0 +1,36 @@
+---
+- name: Create directory tree for user
+  import_tasks: directory_structure.yml
+  tags:
+    - directory_structure
+
+- name: Include firewall setup
+  import_tasks: firewall.yml
+  tags:
+    - firewall
+
+- name: Install flatpak apps
+  import_tasks: flatpak.yml
+  tags:
+    - flatpak
+
+- name: Import rpm related dev tools
+  import_tasks: rpm.yml
+  tags:
+    - rpm
+    - development_tools
+
+- name: Setup tmux
+  import_tasks: tmux.yml
+  tags:
+    - tmux
+
+- name: Configure greetd login manager
+  import_tasks: greetd.yml
+  tags:
+    - greetd
+
+- name: Harden sshd configuration
+  import_tasks: sshd.yml
+  tags:
+    - sshd

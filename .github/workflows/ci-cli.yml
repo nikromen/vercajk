@@ -1,0 +1,41 @@
+name: CLI - Lint & Test
+
+on:
+  push:
+    paths: [cli/**]
+    branches: [main]
+  pull_request:
+    paths: [cli/**]
+
+jobs:
+  lint:
+    name: Ruff lint & format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install ruff
+      - run: ruff check cli/
+      - run: ruff format --check cli/
+
+  test:
+    name: Tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        working-directory: cli
+        run: |
+          pip install poetry
+          poetry install --no-interaction
+      - name: Run tests
+        working-directory: cli
+        run: poetry run pytest --tb=short

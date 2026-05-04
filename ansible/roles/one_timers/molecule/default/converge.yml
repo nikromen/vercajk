@@ -1,0 +1,31 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+
+  pre_tasks:
+    - name: Create test user
+      user:
+        name: testuser
+        state: present
+        create_home: true
+
+    - name: Install required packages for testing
+      package:
+        name:
+          - flatpak
+          - firewalld
+          - git
+        state: present
+
+  vars_files:
+    - ../../../../group_vars/all
+    - ../../../../group_vars/directory_structure
+    - ../../../../group_vars/flatpak_apps
+
+  vars:
+    target_user: testuser
+    home_dir: /home/testuser
+
+  roles:
+    - role: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"

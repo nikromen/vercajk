@@ -1,0 +1,15 @@
+[Unit]
+Description=Vercajk first-boot provisioning
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=/etc/vercajk-firstboot
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/vercajk-firstboot.sh
+RemainAfterExit=false
+StandardOutput=journal+console
+StandardError=journal+console
+
+[Install]
+WantedBy=multi-user.target

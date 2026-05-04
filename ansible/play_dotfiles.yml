@@ -1,0 +1,11 @@
+---
+- name: Play the dotfiles role on localhost
+  hosts: localhost
+  become: true
+  become_user: "{{ target_user }}"
+
+  vars_files:
+    - group_vars/all
+
+  roles:
+    - role: dotfiles

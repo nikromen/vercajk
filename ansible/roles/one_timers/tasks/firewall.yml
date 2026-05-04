@@ -1,0 +1,9 @@
+---
+- name: Make sure ssh is allowed in firewall
+  become: true
+  become_user: root
+  ansible.posix.firewalld:
+    service: ssh
+    permanent: true
+    state: enabled
+    immediate: true

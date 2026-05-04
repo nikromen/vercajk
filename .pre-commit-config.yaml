@@ -1,0 +1,124 @@
+ci:
+  autofix_prs: false
+  skip:
+    - ansible-lint
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-ast
+      - id: check-builtin-literals
+      - id: check-docstring-first
+      - id: check-executables-have-shebangs
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: check-yaml
+      - id: destroyed-symlinks
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args:
+          - --fix=lf
+      - id: detect-private-key
+      - id: check-toml
+      - id: pretty-format-json
+        args:
+          - --autofix
+      - id: trailing-whitespace
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.10.0.1
+    hooks:
+      - id: shellcheck
+        args: [-x]
+
+  - repo: https://github.com/JohnnyMorganz/StyLua
+    rev: v2.0.2
+    hooks:
+      - id: stylua
+        args: [--check]
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.15.0
+    hooks:
+      - id: mypy
+        additional_dependencies:
+          - types-PyYAML
+          - types-requests
+        exclude: ansible/roles/.*/molecule/
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.8
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
+
+  - repo: https://github.com/ansible/ansible-lint.git
+    rev: v26.3.0
+    hooks:
+      - id: ansible-lint
+        files: \.(yaml|yml)$
+        additional_dependencies:
+          - ansible
+
+  - repo: local
+    hooks:
+      - id: submodule-auto-update
+        name: Auto-update submodules after pull
+        entry: git submodule update --init --recursive
+        language: system
+        stages: [post-merge]
+        always_run: true
+        pass_filenames: false
+
+      - id: submodule-uncommitted-check
+        name: Check dotfiles has no uncommitted changes
+        entry: >
+          bash -c 'D=ansible/roles/dotfiles/files/dotfiles;
+          test ! -d "$D/.git" || { cd "$D" &&
+          [ -z "$(git status --porcelain)" ] ||
+          { echo "ERROR dotfiles has uncommitted changes. Run just dotfiles-commit msg"; exit 1; }; }'
+        language: system
+        stages: [pre-push]
+        always_run: true
+        pass_filenames: false
+
+      - id: submodule-unpushed-check
+        name: Check dotfiles has no unpushed commits
+        entry: >
+          bash -c 'D=ansible/roles/dotfiles/files/dotfiles;
+          test ! -d "$D/.git" || { cd "$D" &&
+          LOCAL=$(git rev-parse HEAD) &&
+          REMOTE=$(git rev-parse @{u} 2>/dev/null || echo "") &&
+          [ -z "$REMOTE" ] || [ "$LOCAL" = "$REMOTE" ] ||
+          { echo "ERROR dotfiles has unpushed commits. Run just dotfiles-push"; exit 1; }; }'
+        language: system
+        stages: [pre-push]
+        always_run: true
+        pass_filenames: false
+
+      - id: submodule-pointer-check
+        name: Check submodule pointer is up to date
+        entry: >
+          bash -c 'D=ansible/roles/dotfiles/files/dotfiles;
+          test ! -d "$D/.git" || { EXPECTED=$(git ls-tree HEAD "$D" 2>/dev/null | awk "{print \$3}") &&
+          [ -z "$EXPECTED" ] || { ACTUAL=$(cd "$D" && git rev-parse HEAD) &&
+          [ "$EXPECTED" = "$ACTUAL" ]; } ||
+          { echo "ERROR submodule pointer out of date. Run just commit update-dotfiles"; exit 1; }; }'
+        language: system
+        stages: [pre-push]
+        always_run: true
+        pass_filenames: false

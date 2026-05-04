@@ -1,0 +1,9 @@
+skip_list:
+  - fqcn[action-core]
+  - command-instead-of-module
+
+exclude_paths:
+  - ansible/play_*.yml
+  - ansible/collections/ansible_collections/*
+  - ansible/roles/dotfiles/files/dotfiles/
+  - dotfiles/

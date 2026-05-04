@@ -1,0 +1,23 @@
+- name: Get vercajk repo path
+  command:
+    cmd: vercajk path
+  register: dotfiles_vercajk_path
+  changed_when: false
+
+- name: Ensure dotfiles submodule is initialized
+  command:
+    cmd: git submodule update --init ansible/roles/dotfiles/files/dotfiles
+    chdir: "{{ dotfiles_vercajk_path.stdout }}"
+  changed_when: false
+
+- name: Stow home folder with dotfiles
+  command:
+    cmd: stow -R . --dir={{ dotfiles_vercajk_path.stdout }}/ansible/roles/dotfiles/files/dotfiles --target={{ home_dir }}
+  register: dotfiles_stow_result
+  changed_when: dotfiles_stow_result.stderr | length > 0
+
+- name: Import bash
+  import_tasks: bash.yml
+
+- name: Import fish
+  import_tasks: fish.yml

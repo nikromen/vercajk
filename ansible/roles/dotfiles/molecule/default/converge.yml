@@ -1,0 +1,34 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+
+  pre_tasks:
+    - name: Create test user
+      user:
+        name: testuser
+        state: present
+        create_home: true
+
+    - name: Install stow and required tools
+      package:
+        name:
+          - stow
+          - bash
+          - python3-pip
+        state: present
+
+    - name: Install vercajk-cli (mock for testing)
+      command:
+        cmd: pip3 install --break-system-packages click pyyaml pydantic jinja2
+      changed_when: true
+
+  vars_files:
+    - ../../../../group_vars/all
+
+  vars:
+    target_user: testuser
+    home_dir: /home/testuser
+
+  roles:
+    - role: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"

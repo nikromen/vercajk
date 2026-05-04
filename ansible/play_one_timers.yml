@@ -1,0 +1,13 @@
+---
+- name: Play the one timers for system-wide setup
+  hosts: localhost
+  become: true
+  become_user: "{{ target_user }}"
+
+  vars_files:
+    - group_vars/all
+    - group_vars/directory_structure
+    - group_vars/flatpak_apps
+
+  roles:
+    - role: one_timers

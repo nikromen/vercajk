@@ -1,0 +1,29 @@
+name: Integration - VM Test
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * 1"
+
+jobs:
+  vm-test:
+    name: End-to-end VM test
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install vercajk CLI
+        working-directory: cli
+        run: |
+          pip install poetry
+          poetry install --no-interaction
+
+      - name: Run VM test
+        run: vercajk test --auto
+        timeout-minutes: 60
+
+      - name: Cleanup
+        if: always()
+        run: vercajk test --cleanup

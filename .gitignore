@@ -1,0 +1,23 @@
+.idea/
+.mypy_cache/
+.vscode/
+.ansible/
+
+# ignore locally installed ansible collections
+ansible/collections/ansible_collections/
+__pycache__/
+node_modules/
+
+# Secrets and credentials, not really in this repo but just to be sure
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+*.vault_password
+vault_pass*
+secrets.*
+credentials.*
