@@ -32,7 +32,7 @@ def convert_variables(bash_dir: Path, store_to: Path) -> None:
 
     output_dir = store_to / "variables"
     output_dir.mkdir(parents=True, exist_ok=True)
-    with open(output_dir / "variables.fish", "w") as fish_vars:
+    with open(output_dir / "variables", "w") as fish_vars:
         for line in lines_for_fish_variables:
             fish_vars.write(line + "\n")
 
