@@ -30,7 +30,7 @@ def update(ctx: Context, pull: bool, system: bool, auto_snapshot: bool) -> None:
     if pull:
         click.echo("Pulling latest changes...")
         result = subprocess.run(
-            ["git", "pull", "--ff-only"],
+            ["git", "pull", "--ff-only", "--recurse-submodules"],
             cwd=repo_path,
             capture_output=True,
             text=True,
