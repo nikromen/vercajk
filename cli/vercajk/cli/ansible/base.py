@@ -30,23 +30,38 @@ from vercajk.cli.ansible.update import update
     help="Tags to skip in ansible-playbook.",
 )
 @click.option(
+    "-u",
+    "--user",
+    "user",
+    multiple=True,
+    help="Target user(s) to provision (repeatable). Defaults to target_users from the config file.",
+)
+@click.option(
     "--check/--no-check",
     default=False,
     help="Dry-run mode: show what would change without applying.",
 )
 @pass_context
 def ansible(
-    ctx: Context, verbose: int, tag: tuple[str, ...], skip_tag: tuple[str, ...], check: bool
+    ctx: Context,
+    verbose: int,
+    tag: tuple[str, ...],
+    skip_tag: tuple[str, ...],
+    user: tuple[str, ...],
+    check: bool,
 ):
     """Run Ansible playbooks on localhost."""
     verbose_str = ""
     if verbose > 0:
         verbose_str = "-" + ("v" * min(verbose, 6))
 
+    # Tags/users are resolved against Config defaults later, in the leaf commands -
+    # not here, so `vercajk ansible <subcommand> --help` keeps working without a config.
     ctx.obj.ansible_ctx = AnsibleObj(
         verbose=verbose_str,
         tags=list(tag),
         skip_tags=list(skip_tag),
+        users=list(user),
         check=check,
     )
 

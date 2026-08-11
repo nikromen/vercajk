@@ -6,11 +6,12 @@ import subprocess
 from pathlib import Path
 
 import click
+import libvirt
 import requests
 
 from vercajk.core.constants import KICKSTART_TAGS
 from vercajk.core.exceptions import VercajkImageException
-from vercajk.core.image import Image, _get_libvirt
+from vercajk.core.image import Image
 from vercajk.core.utils import render_kickstart, require_tool
 
 _VM_NAME = "vercajk-test"
@@ -231,7 +232,6 @@ def run_test(
 @test.command("status")
 def status() -> None:
     """Show the status of the test VM."""
-    libvirt = _get_libvirt()
     try:
         conn = libvirt.open("qemu:///system")
     except libvirt.libvirtError as e:
@@ -258,6 +258,9 @@ def status() -> None:
 
 
 @test.command("cleanup")
+@click.confirmation_option(
+    prompt="This will destroy the test VM and remove its disk/ISO. Continue?",
+)
 def cleanup() -> None:
     """Destroy the test VM and remove its disk."""
     try:

@@ -21,8 +21,7 @@ def _download_image(url: str, dest: Path) -> Path:
 
     unknown_file = dest / "image.download"
     with open(unknown_file, "wb") as f:
-        for chunk in resp.iter_content(chunk_size=8 * 1024 * 1024):
-            f.write(chunk)
+        f.writelines(resp.iter_content(chunk_size=8 * 1024 * 1024))
 
     mimetype = get_mime(unknown_file)
     if mimetype == ISO_MIME:
@@ -43,16 +42,29 @@ def vm():
 
 @vm.command("create")
 @click.argument("image_path", type=str)
-@click.option("-m", "--memory", default=2048, help="Memory in MB.")
-@click.option("--vcpus", default=2, help="Number of virtual CPUs.")
+@click.option(
+    "--preset",
+    type=str,
+    default=None,
+    help="Named preset for memory/vcpus/graphics, defined under vm_presets in "
+    "~/.config/vercajk.yaml. Explicit -m/--vcpus/-g flags below always override it.",
+)
+@click.option("-m", "--memory", type=int, default=None, help="Memory in MB.")
+@click.option("--vcpus", type=int, default=None, help="Number of virtual CPUs.")
 @click.option("--os-variant", default="auto", help="OS variant for virt-install.")
 @click.option("-n", "--network", default="bridge=virbr0", help="Network configuration.")
-@click.option("-g", "--graphics", default="spice", help="Graphics type.")
+@click.option("-g", "--graphics", default=None, help="Graphics type.")
 @click.option("--name", "virt_name", default=None, help="VM name.")
 @click.option(
     "--fork/--prepare",
     default=False,
     help="Fork existing qcow2 (--fork) or install from ISO (--prepare).",
+)
+@click.option(
+    "--ephemeral",
+    is_flag=True,
+    help="With --fork: use a copy-on-write overlay instead of a full copy. The "
+    "base image stays untouched, ideal for repeated throwaway experiments",
 )
 @click.option(
     "-d",
@@ -61,21 +73,42 @@ def vm():
     required=True,
     help="Destination directory for the created image.",
 )
+@click.pass_context
 def create(
+    ctx: click.Context,
     image_path: str,
-    memory: int,
-    vcpus: int,
+    preset: str | None,
+    memory: int | None,
+    vcpus: int | None,
     os_variant: str,
     network: str,
-    graphics: str,
+    graphics: str | None,
     virt_name: str | None,
     fork: bool,
+    ephemeral: bool,
     dest: Path,
 ) -> None:
     """Create a VM from an ISO or qcow2 image.
 
     IMAGE_PATH can be a local file path or a URL to download.
     """
+    if ephemeral and not fork:
+        raise click.UsageError("--ephemeral requires --fork (needs an existing qcow2 base image).")
+
+    preset_values: dict[str, int | str] = {}
+    if preset is not None:
+        vm_presets = ctx.obj.config.vm_presets
+        if preset not in vm_presets:
+            available = ", ".join(sorted(vm_presets)) or "(none defined)"
+            raise click.UsageError(
+                f"Unknown preset '{preset}'. Add it under vm_presets in "
+                f"~/.config/vercajk.yaml, or choose one of: {available}"
+            )
+        preset_values = vm_presets[preset]
+
+    memory = memory if memory is not None else int(preset_values.get("memory", 2048))
+    vcpus = vcpus if vcpus is not None else int(preset_values.get("vcpus", 2))
+    graphics = graphics if graphics is not None else str(preset_values.get("graphics", "spice"))
 
     def _run(src: Path) -> None:
         image = Image(
@@ -89,8 +122,12 @@ def create(
         )
         try:
             if fork:
-                result_path = image.fork_qcow2(dest)
-                click.echo(f"Forked image created: {result_path}")
+                if ephemeral:
+                    result_path = image.create_overlay(dest)
+                    click.echo(f"Ephemeral overlay VM created: {result_path}")
+                else:
+                    result_path = image.fork_qcow2(dest)
+                    click.echo(f"Forked image created: {result_path}")
             else:
                 result_path = image.prepare(dest)
                 click.echo(f"Prepared image created: {result_path}")
@@ -108,11 +145,38 @@ def create(
 
 @vm.command("destroy")
 @click.argument("name")
+@click.confirmation_option(prompt="This will destroy and undefine the VM. Continue?")
 def destroy(name: str) -> None:
     """Destroy and undefine a VM by name."""
     try:
         Image.destroy_by_name(name)
         click.echo(f"VM '{name}' destroyed.")
+    except VercajkImageException as e:
+        click.echo(f"Error: {e}", err=True)
+        sys.exit(1)
+
+
+@vm.command("snapshot")
+@click.argument("name")
+def snapshot(name: str) -> None:
+    """Create a quick-revert snapshot of a VM (replaces any previous one)."""
+    try:
+        Image.create_snapshot(name)
+    except VercajkImageException as e:
+        click.echo(f"Error: {e}", err=True)
+        sys.exit(1)
+
+    click.echo(f"Snapshot created for VM '{name}'.")
+    click.echo(f"Revert anytime with: vercajk image vm revert {name}")
+
+
+@vm.command("revert")
+@click.argument("name")
+def revert(name: str) -> None:
+    """Revert a VM to its last snapshot."""
+    try:
+        Image.revert_to_snapshot(name)
+        click.echo(f"VM '{name}' reverted to snapshot.")
     except VercajkImageException as e:
         click.echo(f"Error: {e}", err=True)
         sys.exit(1)

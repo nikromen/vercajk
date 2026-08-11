@@ -173,16 +173,6 @@ LC_TELEPHONE=cs_CZ.UTF-8
 LC_MEASUREMENT=cs_CZ.UTF-8
 EOF
 
-# Setup shared-documents directory for everyone in shared-documents group
-{% if "multi_user" in tags|default([]) or not tags|default([]) %}
-groupadd shared-documents
-mkdir -p /srv/shared-documents
-chown :shared-documents /srv/shared-documents
-chmod 2770 /srv/shared-documents
-setfacl -d -m g:shared-documents:rwx /srv/shared-documents
-setfacl -m g:shared-documents:rwx /srv/shared-documents
-{% endif %}
-
 # RPM Fusion
 dnf -y install "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ fedora_version | default(43) }}.noarch.rpm"
 dnf -y install "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ fedora_version | default(43) }}.noarch.rpm"

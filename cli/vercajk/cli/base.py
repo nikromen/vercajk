@@ -5,9 +5,11 @@ from pathlib import Path
 
 import click
 
+from vercajk.core import config as config_module
 from vercajk.core.ansible import AnsibleObj
-from vercajk.core.config import Config, get_config
 from vercajk.cli.ansible.base import ansible
+from vercajk.cli.completion import completion
+from vercajk.cli.config import config as config_group
 from vercajk.cli.fish import fish
 from vercajk.cli.image.base import image
 from vercajk.cli.snapshot.base import snapshot
@@ -16,8 +18,24 @@ from vercajk.cli.test.base import test
 
 @dataclass
 class Obj:
-    config: Config
+    repo_path_override: Path | None = None
     ansible_ctx: AnsibleObj = field(default_factory=AnsibleObj)
+    # Set by the `fish` command group for its subcommands (scripts/variables).
+    fish_store_to: Path | None = None
+    _config: config_module.Config | None = field(default=None, repr=False, init=False)
+
+    @property
+    def config(self) -> config_module.Config:
+        """Resolve the config lazily, so commands that don't need it (e.g. --help
+        on any subcommand) work even without a config file present."""
+        if self._config is None:
+            try:
+                self._config = config_module.get_config(
+                    repo_path_override=self.repo_path_override,
+                )
+            except FileNotFoundError as e:
+                raise click.ClickException(str(e)) from e
+        return self._config
 
 
 @click.group("vercajk", context_settings={"help_option_names": ["-h", "--help"]})
@@ -29,14 +47,7 @@ class Obj:
 @click.pass_context
 def vercajk_cli(ctx: click.Context, repo_path: Path | None) -> None:
     """Personal toolbox for Fedora/Rocky system provisioning."""
-    try:
-        config = get_config(repo_path_override=repo_path)
-    except FileNotFoundError as e:
-        if ctx.invoked_subcommand not in (None, "path"):
-            raise click.ClickException(str(e))
-        config = Config(repo_path=Path("."))
-
-    ctx.obj = Obj(config=config)
+    ctx.obj = Obj(repo_path_override=repo_path)
 
 
 @vercajk_cli.command("path")
@@ -59,6 +70,8 @@ def version() -> None:
 
 
 vercajk_cli.add_command(ansible)
+vercajk_cli.add_command(completion)
+vercajk_cli.add_command(config_group)
 vercajk_cli.add_command(fish)
 vercajk_cli.add_command(image)
 vercajk_cli.add_command(snapshot)

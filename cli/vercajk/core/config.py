@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import getpass
 import os
 from pathlib import Path
 
 import yaml
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 from vercajk.core.exceptions import VercajkConfigException
 
@@ -15,6 +16,10 @@ _ENV_REPO_PATH = "VERCAJK_REPO_PATH"
 
 class Config(BaseModel):
     repo_path: Path
+    target_users: list[str] = Field(default_factory=lambda: [getpass.getuser()])
+    tags: list[str] = Field(default_factory=list)
+    skip_tags: list[str] = Field(default_factory=list)
+    vm_presets: dict[str, dict[str, int | str]] = Field(default_factory=dict)
 
     @field_validator("repo_path", mode="before")
     @classmethod
@@ -31,7 +36,9 @@ class Config(BaseModel):
 
     @property
     def dotfiles_dir(self) -> Path:
-        return self.repo_path / "ansible" / "roles" / "dotfiles" / "files" / "dotfiles"
+        # Uses the repo-root convenience symlink (-> ansible/roles/dotfiles/files/dotfiles)
+        # rather than the deep submodule path, so this stays valid if the role is reorganized.
+        return self.repo_path / "dotfiles"
 
 
 def get_config(repo_path_override: Path | None = None) -> Config:

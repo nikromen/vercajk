@@ -1,4 +1,5 @@
 ---
-# Override this via -e or in inventory to target a different user
-target_user: "{{ lookup('env', 'USER') | default('nikromen', true) }}"
-home_dir: "/home/{{ target_user }}"
+# Override target_users via -e (e.g. from `vercajk ansible ... --user`) to control who
+# gets provisioned on this machine. Defaults to the current $USER when run outside the
+# vercajk CLI (e.g. raw ansible-playbook).
+target_users: ["{{ lookup('env', 'USER') }}"]

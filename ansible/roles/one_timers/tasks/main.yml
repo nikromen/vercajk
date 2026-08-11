@@ -1,29 +1,19 @@
 ---
-- name: Create directory tree for user
-  import_tasks: directory_structure.yml
+# Machine-wide tasks: run once, regardless of how many target_users are configured.
+- name: Setup shared-documents group and directory
+  import_tasks: shared_documents.yml
   tags:
-    - directory_structure
+    - shared_documents
 
 - name: Include firewall setup
   import_tasks: firewall.yml
   tags:
     - firewall
 
-- name: Install flatpak apps
-  import_tasks: flatpak.yml
+- name: Install system-wide flatpak apps
+  import_tasks: flatpak_system.yml
   tags:
     - flatpak
-
-- name: Import rpm related dev tools
-  import_tasks: rpm.yml
-  tags:
-    - rpm
-    - development_tools
-
-- name: Setup tmux
-  import_tasks: tmux.yml
-  tags:
-    - tmux
 
 - name: Configure greetd login manager
   import_tasks: greetd.yml
@@ -34,3 +24,42 @@
   import_tasks: sshd.yml
   tags:
     - sshd
+
+# Per-user tasks: run once for every user in target_users.
+- name: Create directory tree for each target user
+  include_tasks: directory_structure.yml
+  loop: "{{ target_users }}"
+  loop_control:
+    loop_var: target_user
+  vars:
+    home_dir: "/home/{{ target_user }}"
+  tags:
+    - directory_structure
+
+- name: Import rpm related dev tools for each target user
+  include_tasks: rpm.yml
+  loop: "{{ target_users }}"
+  loop_control:
+    loop_var: target_user
+  tags:
+    - rpm
+    - development_tools
+
+- name: Setup tmux plugin manager for each target user
+  include_tasks: tmux.yml
+  loop: "{{ target_users }}"
+  loop_control:
+    loop_var: target_user
+  vars:
+    home_dir: "/home/{{ target_user }}"
+  tags:
+    - tmux
+
+- name: Install user flatpak apps for each target user
+  include_tasks: flatpak_user.yml
+  loop: "{{ target_users }}"
+  loop_control:
+    loop_var: target_user
+  tags:
+    - flatpak
+    - games

@@ -21,8 +21,8 @@ provisioner:
   inventory:
     host_vars:
       vercajk-test:
-        target_user: testuser
-        home_dir: /home/testuser
+        # Two users, to exercise the per-user task loop (e.g. a shared desktop).
+        target_users: [testuser, testuser2]
 
 verifier:
   name: testinfra

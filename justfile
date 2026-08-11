@@ -5,7 +5,7 @@ dotfiles_dir := "ansible/roles/dotfiles/files/dotfiles"
 test:
     podman run --rm -v ./cli:/work:Z -w /work \
         registry.fedoraproject.org/fedora:latest \
-        bash -c "dnf -y install python3-pip python3-devel && pip install poetry && poetry install --no-interaction && poetry run pytest --tb=short"
+        bash -c "dnf -y install python3-pip python3-devel libvirt-devel gcc && pip install poetry && poetry install --no-interaction && poetry run pytest --tb=short"
 
 test-molecule role="dotfiles":
     podman run --rm --privileged \
@@ -18,27 +18,25 @@ test-molecule role="dotfiles":
 
 pull:
     git pull --ff-only
-    git submodule update --init --recursive
+    git submodule update --remote --recursive
 
 push:
     #!/usr/bin/env bash
     set -euo pipefail
     DOTFILES="{{dotfiles_dir}}"
-    if [ -d "$DOTFILES/.git" ]; then
-        cd "$DOTFILES"
-        if [ -n "$(git status --porcelain)" ]; then
-            echo "ERROR: dotfiles has uncommitted changes. Commit them first."
+    if [ -e "$DOTFILES/.git" ]; then
+        if ! MSG=$(scripts/check-dotfiles-submodule.sh uncommitted 2>&1); then
+            echo "ERROR: $MSG"
             exit 1
         fi
-        UPSTREAM=$(git rev-parse @{u} 2>/dev/null || echo "")
+        UPSTREAM=$(cd "$DOTFILES" && git rev-parse @{u} 2>/dev/null || echo "")
         if [ -n "$UPSTREAM" ]; then
-            LOCAL=$(git rev-parse @)
+            LOCAL=$(cd "$DOTFILES" && git rev-parse @)
             if [ "$LOCAL" != "$UPSTREAM" ]; then
                 echo "Pushing dotfiles submodule..."
-                git push
+                (cd "$DOTFILES" && git push)
             fi
         fi
-        cd - >/dev/null
         if ! git diff --quiet "$DOTFILES"; then
             git add "$DOTFILES"
             git commit -m "update dotfiles submodule"
@@ -52,7 +50,7 @@ commit msg:
     #!/usr/bin/env bash
     set -euo pipefail
     DOTFILES="{{dotfiles_dir}}"
-    if [ -d "$DOTFILES/.git" ] && ! git diff --quiet "$DOTFILES"; then
+    if [ -e "$DOTFILES/.git" ] && ! git diff --quiet "$DOTFILES"; then
         git add "$DOTFILES"
     fi
     git add -A
@@ -71,7 +69,7 @@ status:
     @git status --short
     @echo ""
     @echo "=== Dotfiles submodule ==="
-    @test ! -d {{dotfiles_dir}}/.git || (cd {{dotfiles_dir}} && git status --short)
+    @test ! -e {{dotfiles_dir}}/.git || (cd {{dotfiles_dir}} && git status --short)
     @echo ""
     @echo "=== Submodule sync ==="
     @git submodule status
@@ -81,25 +79,17 @@ check-health:
     set -euo pipefail
     DOTFILES="{{dotfiles_dir}}"
     OK=true
-    if [ -d "$DOTFILES/.git" ]; then
-        if [ -n "$(cd "$DOTFILES" && git status --porcelain)" ]; then
-            echo "WARNING: dotfiles has uncommitted changes"
-            OK=false
-        fi
-        cd "$DOTFILES"
-        LOCAL=$(git rev-parse HEAD)
-        REMOTE=$(git rev-parse @{u} 2>/dev/null || echo "none")
-        if [ "$REMOTE" != "none" ] && [ "$LOCAL" != "$REMOTE" ]; then
-            echo "WARNING: dotfiles has unpushed commits"
-            OK=false
-        fi
-        cd - >/dev/null
-        EXPECTED=$(git ls-tree HEAD "$DOTFILES" | awk '{print $3}')
-        ACTUAL=$(cd "$DOTFILES" && git rev-parse HEAD)
-        if [ "$EXPECTED" != "$ACTUAL" ]; then
-            echo "WARNING: submodule pointer out of date (run: just commit 'update dotfiles')"
-            OK=false
-        fi
+    if [ -e "$DOTFILES/.git" ]; then
+        for action in uncommitted unpushed pointer; do
+            if ! MSG=$(scripts/check-dotfiles-submodule.sh "$action" 2>&1); then
+                echo "WARNING: $MSG"
+                OK=false
+            fi
+        done
+    fi
+    if ! MSG=$(scripts/check-dotfiles-submodule.sh remote 2>&1); then
+        echo "WARNING: $MSG"
+        OK=false
     fi
     if [ -n "$(git status --porcelain)" ]; then
         echo "WARNING: main repo has uncommitted changes"

@@ -6,7 +6,9 @@ import sys
 import click
 from click import Context, pass_context
 
-from vercajk.core.ansible import run_ansible_playbook, setup_ansible_cmd
+from vercajk.cli.ansible.dotfiles import dotfiles
+from vercajk.cli.ansible.one_timers import one_timers
+from vercajk.core.ansible import apply_config_defaults
 from vercajk.core.btrfs import maybe_create_snapshot
 
 
@@ -23,8 +25,8 @@ def update(ctx: Context, pull: bool, system: bool, auto_snapshot: bool) -> None:
     """Update system: pull repo, run playbooks, optionally upgrade packages."""
     config = ctx.obj.config
     repo_path = config.repo_path
-    inventory = repo_path / "inventory"
 
+    apply_config_defaults(ctx.obj.ansible_ctx, config)
     maybe_create_snapshot(repo_path, ctx.obj.ansible_ctx.tags, auto_snapshot)
 
     if pull:
@@ -34,6 +36,7 @@ def update(ctx: Context, pull: bool, system: bool, auto_snapshot: bool) -> None:
             cwd=repo_path,
             capture_output=True,
             text=True,
+            check=False,
         )
         if result.returncode != 0:
             click.echo(f"Git pull failed: {result.stderr}", err=True)
@@ -42,20 +45,21 @@ def update(ctx: Context, pull: bool, system: bool, auto_snapshot: bool) -> None:
 
     if system:
         click.echo("Upgrading system packages...")
-        dnf_result = subprocess.run(["sudo", "dnf", "upgrade", "--refresh", "-y"])
+        dnf_result = subprocess.run(["sudo", "dnf", "upgrade", "--refresh", "-y"], check=False)
         if dnf_result.returncode != 0:
             click.echo("Warning: dnf upgrade failed.", err=True)
 
         click.echo("Updating flatpak apps...")
-        flatpak_result = subprocess.run(["flatpak", "update", "-y"])
+        flatpak_result = subprocess.run(["flatpak", "update", "-y"], check=False)
         if flatpak_result.returncode != 0:
             click.echo("Warning: flatpak update failed.", err=True)
 
+    # The snapshot was already handled above, so the sub-commands shouldn't create
+    # their own (that would just delete-and-recreate it a second time for nothing).
     click.echo("Running one-timers playbook...")
-    cmd = setup_ansible_cmd(ctx.obj.ansible_ctx, inventory=inventory)
-    run_ansible_playbook(cmd, config.ansible_dir / "play_one_timers.yml")
+    ctx.invoke(one_timers, auto_snapshot=False)
 
     click.echo("Running dotfiles playbook...")
-    run_ansible_playbook(cmd, config.ansible_dir / "play_dotfiles.yml")
+    ctx.invoke(dotfiles, auto_snapshot=False)
 
     click.echo("Update complete.")

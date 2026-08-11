@@ -13,6 +13,9 @@ BuildArch:      noarch
 
 BuildRequires:  python3-devel
 BuildRequires:  pyproject-rpm-macros
+BuildRequires:  python3-pytest
+BuildRequires:  python3-pytest-click
+BuildRequires:  python3-libvirt
 
 Requires:  python3-click
 Requires:  python3-jinja2
@@ -22,10 +25,9 @@ Requires:  python3-requests
 Requires:  ansible-core
 Requires:  stow
 Requires:  git
-
-Recommends:  python3-libvirt
-Recommends:  lorax
-Recommends:  virt-install
+Requires:  python3-libvirt
+Requires:  lorax
+Requires:  virt-install
 
 
 %description
@@ -47,6 +49,10 @@ Recommends:  virt-install
 %install
 %pyproject_install
 %pyproject_save_files %{srcname}
+
+
+%check
+%pytest
 
 
 %files -n %{name} -f %{pyproject_files}

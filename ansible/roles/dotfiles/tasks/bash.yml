@@ -1,5 +1,7 @@
 ---
 - name: Create bashrc if not exist
+  become: true
+  become_user: "{{ target_user }}"
   file:
     path: "{{ home_dir }}/.bashrc"
     state: touch
@@ -8,6 +10,8 @@
     access_time: preserve
 
 - name: Append shell configs to .bashrc file
+  become: true
+  become_user: "{{ target_user }}"
   blockinfile:
     path: "{{ home_dir }}/.bashrc"
     block: |

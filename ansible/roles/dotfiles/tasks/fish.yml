@@ -1,11 +1,15 @@
 ---
 - name: Create tmp dir
+  become: true
+  become_user: "{{ target_user }}"
   tempfile:
     state: directory
     suffix: _fish_files
   register: dotfiles_fish_temp_dir
 
 - name: Generate and sync fish config
+  become: true
+  become_user: "{{ target_user }}"
   block:
     - name: Generate fish variables from bash variables
       command:
@@ -35,6 +39,8 @@
 
   always:
     - name: Clean up temporary directory
+      become: true
+      become_user: "{{ target_user }}"
       file:
         path: "{{ dotfiles_fish_temp_dir.path }}"
         state: absent
