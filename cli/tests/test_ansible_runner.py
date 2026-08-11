@@ -80,6 +80,16 @@ class TestSetupAnsibleCmd:
         cmd = setup_ansible_cmd(obj)
         assert "--skip-tags=games" in cmd
 
+    def test_with_ask_become_pass(self):
+        obj = AnsibleObj(ask_become_pass=True)
+        cmd = setup_ansible_cmd(obj)
+        assert "--ask-become-pass" in cmd
+
+    def test_without_ask_become_pass_by_default(self):
+        obj = AnsibleObj()
+        cmd = setup_ansible_cmd(obj)
+        assert "--ask-become-pass" not in cmd
+
     def test_with_extra_vars_list(self):
         obj = AnsibleObj(extra_vars={"target_users": ["alice", "bob"]})
         cmd = setup_ansible_cmd(obj)

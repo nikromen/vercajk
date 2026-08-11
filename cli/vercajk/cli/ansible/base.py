@@ -41,6 +41,12 @@ from vercajk.cli.ansible.update import update
     default=False,
     help="Dry-run mode: show what would change without applying.",
 )
+@click.option(
+    "-K",
+    "--ask-become-pass/--no-ask-become-pass",
+    default=False,
+    help="Prompt for the sudo/become password (needed unless passwordless sudo is configured).",
+)
 @pass_context
 def ansible(
     ctx: Context,
@@ -49,6 +55,7 @@ def ansible(
     skip_tag: tuple[str, ...],
     user: tuple[str, ...],
     check: bool,
+    ask_become_pass: bool,
 ):
     """Run Ansible playbooks on localhost."""
     verbose_str = ""
@@ -63,6 +70,7 @@ def ansible(
         skip_tags=list(skip_tag),
         users=list(user),
         check=check,
+        ask_become_pass=ask_become_pass,
     )
 
 

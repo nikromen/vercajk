@@ -19,6 +19,7 @@ class AnsibleObj:
     skip_tags: list[str] = field(default_factory=list)
     users: list[str] = field(default_factory=list)
     check: bool = False
+    ask_become_pass: bool = False
     extra_vars: dict[str, list[str] | str] = field(default_factory=dict)
 
 
@@ -60,6 +61,9 @@ def setup_ansible_cmd(obj: AnsibleObj, inventory: Path | None = None) -> list[st
 
     if obj.check:
         base_cmd.extend(["--check", "--diff"])
+
+    if obj.ask_become_pass:
+        base_cmd.append("--ask-become-pass")
 
     return base_cmd
 

@@ -69,6 +69,11 @@ class TestAnsibleGroup:
         assert result.exit_code == 0
         assert "--user" in result.output
 
+    def test_ansible_ask_become_pass_flag(self):
+        result = self.runner.invoke(vercajk_cli, ["ansible", "--help"])
+        assert result.exit_code == 0
+        assert "--ask-become-pass" in result.output
+
 
 class TestFishGroup:
     def setup_method(self):
