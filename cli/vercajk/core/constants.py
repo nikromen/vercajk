@@ -10,13 +10,15 @@ ANSIBLE_TAGS = [
     "directory_structure",
     "firewall",
     "tmux",
+    "greetd",
+    "sshd",
+    "shared_documents",
 ]
 
 KICKSTART_TAGS = [
     "desktop",
     "kde",
     "development_tools",
-    "multi_user",
     "communication",
     "multimedia",
     "games",

@@ -1,17 +1,23 @@
 ---
 - name: Ensure if tmux directory exists
+  become: true
+  become_user: "{{ target_user }}"
   file:
     path: "{{ home_dir }}/.local/share/tmux"
     state: directory
     mode: "0755"
 
 - name: Ensure ~/.local/share/tmux/plugins directory exists
+  become: true
+  become_user: "{{ target_user }}"
   file:
     path: "{{ home_dir }}/.local/share/tmux/plugins"
     state: directory
     mode: "0755"
 
 - name: Clone tmux plugin manager
+  become: true
+  become_user: "{{ target_user }}"
   git:
     repo: https://github.com/tmux-plugins/tpm
     dest: "{{ home_dir }}/.local/share/tmux/plugins/tpm"

@@ -2,6 +2,10 @@ ci:
   autofix_prs: false
   skip:
     - ansible-lint
+  # Check out the dotfiles submodule for real (default: false) so that if a
+  # commit references a dotfiles commit that was never pushed, the checkout
+  # itself fails loudly on the PR instead of silently no-op'ing.
+  submodules: true
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -78,7 +82,7 @@ repos:
     hooks:
       - id: submodule-auto-update
         name: Auto-update submodules after pull
-        entry: git submodule update --init --recursive
+        entry: git submodule update --remote --recursive
         language: system
         stages: [post-merge]
         always_run: true
@@ -86,39 +90,24 @@ repos:
 
       - id: submodule-uncommitted-check
         name: Check dotfiles has no uncommitted changes
-        entry: >
-          bash -c 'D=ansible/roles/dotfiles/files/dotfiles;
-          test ! -d "$D/.git" || { cd "$D" &&
-          [ -z "$(git status --porcelain)" ] ||
-          { echo "ERROR dotfiles has uncommitted changes. Run just dotfiles-commit msg"; exit 1; }; }'
-        language: system
+        entry: scripts/check-dotfiles-submodule.sh uncommitted
+        language: script
         stages: [pre-push]
         always_run: true
         pass_filenames: false
 
       - id: submodule-unpushed-check
         name: Check dotfiles has no unpushed commits
-        entry: >
-          bash -c 'D=ansible/roles/dotfiles/files/dotfiles;
-          test ! -d "$D/.git" || { cd "$D" &&
-          LOCAL=$(git rev-parse HEAD) &&
-          REMOTE=$(git rev-parse @{u} 2>/dev/null || echo "") &&
-          [ -z "$REMOTE" ] || [ "$LOCAL" = "$REMOTE" ] ||
-          { echo "ERROR dotfiles has unpushed commits. Run just dotfiles-push"; exit 1; }; }'
-        language: system
+        entry: scripts/check-dotfiles-submodule.sh unpushed
+        language: script
         stages: [pre-push]
         always_run: true
         pass_filenames: false
 
       - id: submodule-pointer-check
         name: Check submodule pointer is up to date
-        entry: >
-          bash -c 'D=ansible/roles/dotfiles/files/dotfiles;
-          test ! -d "$D/.git" || { EXPECTED=$(git ls-tree HEAD "$D" 2>/dev/null | awk "{print \$3}") &&
-          [ -z "$EXPECTED" ] || { ACTUAL=$(cd "$D" && git rev-parse HEAD) &&
-          [ "$EXPECTED" = "$ACTUAL" ]; } ||
-          { echo "ERROR submodule pointer out of date. Run just commit update-dotfiles"; exit 1; }; }'
-        language: system
+        entry: scripts/check-dotfiles-submodule.sh pointer
+        language: script
         stages: [pre-push]
         always_run: true
         pass_filenames: false

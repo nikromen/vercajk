@@ -11,6 +11,8 @@
   changed_when: false
 
 - name: Stow home folder with dotfiles
+  become: true
+  become_user: "{{ target_user }}"
   command:
     cmd: stow -R . --dir={{ dotfiles_vercajk_path.stdout }}/ansible/roles/dotfiles/files/dotfiles --target={{ home_dir }}
   register: dotfiles_stow_result

@@ -7,7 +7,6 @@ import click
 
 from vercajk.cli.image.iso import iso
 from vercajk.cli.image.kickstart import kickstart
-from vercajk.cli.image.usb import usb
 from vercajk.core.constants import KICKSTART_TAGS
 
 
@@ -33,10 +32,11 @@ from vercajk.core.constants import KICKSTART_TAGS
     help="Tags to include in kickstart (repeatable).",
 )
 @click.option(
-    "--device",
-    type=str,
-    default=None,
-    help="Target USB device (e.g. /dev/sdb). If not specified, shows available devices.",
+    "-o",
+    "--output",
+    type=click.Path(dir_okay=False, writable=True, path_type=Path),
+    default="./custom.iso",
+    help="Output ISO path.",
 )
 @click.pass_context
 def burn(
@@ -44,13 +44,21 @@ def burn(
     base_iso: Path,
     fedora_version: int,
     tag: tuple[str, ...],
-    device: str | None,
+    output: Path,
 ) -> None:
-    """Generate kickstart, embed into ISO, and write to USB in one step."""
+    """Generate a kickstart and embed it into a custom ISO in one step.
+
+    Writing the resulting ISO to a USB drive is left as a manual step -
+    use `dd`, GNOME Disks, Fedora Media Writer, or similar.
+    """
+    output = output.resolve()
     with tempfile.TemporaryDirectory(prefix="vercajk-burn-") as tmpdir:
         ks_path = str(Path(tmpdir) / "output.ks")
-        custom_iso = Path(tmpdir) / "custom.iso"
-
         ctx.invoke(kickstart, tag=tag, output=ks_path, fedora_version=fedora_version)
-        ctx.invoke(iso, ks=Path(ks_path), base_iso=base_iso, output=custom_iso)
-        ctx.invoke(usb, iso_path=custom_iso, device=device, force=False)
+        ctx.invoke(iso, ks=Path(ks_path), base_iso=base_iso, output=output)
+
+    click.echo()
+    click.echo(f"Custom ISO created: {output}")
+    click.echo("Write it to a USB drive manually, e.g.:")
+    click.echo(f"  sudo dd if={output} of=/dev/sdX bs=4M status=progress oflag=sync")
+    click.echo("(or use GNOME Disks / usbimager / Fedora Media Writer)")

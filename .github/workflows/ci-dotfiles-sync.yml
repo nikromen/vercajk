@@ -1,0 +1,26 @@
+name: Dotfiles submodule sync check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ansible/roles/dotfiles/files/dotfiles
+      - .gitmodules
+  pull_request:
+    paths:
+      - ansible/roles/dotfiles/files/dotfiles
+      - .gitmodules
+
+jobs:
+  check-sync:
+    name: Check dotfiles pointer matches tip of main
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compare submodule pointer to dotfiles main tip
+        run: |
+          if ! MSG=$(scripts/check-dotfiles-submodule.sh remote 2>&1); then
+            echo "::error::$MSG"
+            exit 1
+          fi

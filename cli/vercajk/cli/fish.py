@@ -20,16 +20,18 @@ from vercajk.core.fish_converter import convert_scripts, convert_variables
 @pass_context
 def fish(ctx: Context, path: str | None) -> None:
     """Migrate bash functions and variables to fish-compatible files."""
-    config = ctx.obj.config
+    # Store the raw path only; resolving config (and thus dotfiles_dir) happens
+    # lazily in each subcommand, so `vercajk fish scripts --help` works without a
+    # config file.
     ctx.obj.fish_store_to = Path(path or getcwd())
-    ctx.obj.fish_bash_dir = config.dotfiles_dir / ".config" / "bash"
 
 
 @fish.command("scripts")
 @pass_context
 def scripts(ctx: Context) -> None:
     """Generate fish function wrappers for bash scripts."""
-    convert_scripts(ctx.obj.fish_bash_dir, ctx.obj.fish_store_to)
+    bash_dir = ctx.obj.config.dotfiles_dir / ".config" / "bash"
+    convert_scripts(bash_dir, ctx.obj.fish_store_to)
     click.echo("Fish scripts generated.")
 
 
@@ -37,5 +39,6 @@ def scripts(ctx: Context) -> None:
 @pass_context
 def variables(ctx: Context) -> None:
     """Convert bash variables to fish format."""
-    convert_variables(ctx.obj.fish_bash_dir, ctx.obj.fish_store_to)
+    bash_dir = ctx.obj.config.dotfiles_dir / ".config" / "bash"
+    convert_variables(bash_dir, ctx.obj.fish_store_to)
     click.echo("Fish variables generated.")

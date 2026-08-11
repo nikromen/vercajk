@@ -21,4 +21,6 @@ jobs:
         run: ansible-galaxy collection install -r ansible/collections/requirements.yml
 
       - name: Run ansible-lint
-        uses: ansible/ansible-lint@v24
+        # Keep this in sync with the ansible-lint `rev` pinned in .pre-commit-config.yaml,
+        # otherwise this job and pre-commit can disagree on what passes.
+        uses: ansible/ansible-lint@v26.3.0

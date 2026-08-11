@@ -4,20 +4,34 @@ LOGFILE="/var/log/vercajk-firstboot.log"
 exec > >(tee -a "$LOGFILE") 2>&1
 echo "=== Vercajk first-boot provisioning started at $(date) ==="
 
-if [ -z "${VERCAJK_USER:-}" ]; then
-    TARGET_USER=$(getent group wheel | cut -d: -f4 | cut -d, -f1)
-    if [ -z "$TARGET_USER" ]; then
-        echo "ERROR: No user found in wheel group and VERCAJK_USER not set"
-        exit 1
+# Comma-separated string -> YAML list, e.g. "alice,bob" -> ["alice", "bob"].
+to_yaml_list() {
+    local csv="$1"
+    if [ -z "$csv" ]; then
+        echo "[]"
+        return
     fi
-else
-    TARGET_USER="$VERCAJK_USER"
+    local items=()
+    IFS=',' read -ra items <<< "$csv"
+    local out="["
+    local first=true
+    for item in "${items[@]}"; do
+        if [ "$first" = true ]; then first=false; else out+=", "; fi
+        out+="\"$item\""
+    done
+    out+="]"
+    echo "$out"
+}
+
+if [ -z "${VERCAJK_USERS:-}" ]; then
+    echo "ERROR: VERCAJK_USERS not set (comma-separated list of users to provision)"
+    exit 1
 fi
+TARGET_USERS="$VERCAJK_USERS"
 
 REPO_URL="https://github.com/nikromen/vercajk"
 CLONE_DIR="/srv/shared-documents/git-repos/vercajk"
 
-usermod -aG shared-documents "$TARGET_USER" 2>/dev/null || true
 mkdir -p "$(dirname "$CLONE_DIR")"
 if [ ! -d "$CLONE_DIR" ]; then
     git clone --recursive "$REPO_URL" "$CLONE_DIR"
@@ -33,23 +47,20 @@ if ! git -C "$CLONE_DIR" verify-commit HEAD 2>/dev/null; then
     exit 1
 fi
 chown -R :shared-documents "$CLONE_DIR"
-su - "$TARGET_USER" -c "git config --global --add safe.directory $CLONE_DIR"
 
 cat > /etc/vercajk.yaml << EOF
 repo_path: $CLONE_DIR
+target_users: $(to_yaml_list "$TARGET_USERS")
+tags: $(to_yaml_list "${VERCAJK_TAGS:-}")
+skip_tags: $(to_yaml_list "${VERCAJK_SKIP_TAGS:-}")
 EOF
 
-# TODO: replace with vercajk CLI once it supports --user flag
 ansible-galaxy collection install \
     -r "$CLONE_DIR/ansible/collections/requirements.yml"
 
-ansible-playbook -i localhost, -c local \
-    -e "target_user=$TARGET_USER" \
-    "$CLONE_DIR/ansible/play_one_timers.yml"
 
-ansible-playbook -i localhost, -c local \
-    -e "target_user=$TARGET_USER" \
-    "$CLONE_DIR/ansible/play_dotfiles.yml"
+vercajk ansible one-timers
+vercajk ansible dotfiles
 
 echo "=== Provisioning complete at $(date) ==="
 rm -f /etc/vercajk-firstboot

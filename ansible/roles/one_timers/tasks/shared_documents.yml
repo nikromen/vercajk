@@ -1,0 +1,46 @@
+---
+- name: Create shared-documents group
+  become: true
+  become_user: root
+  group:
+    name: shared-documents
+    state: present
+
+- name: Create /srv/shared-documents directory
+  become: true
+  become_user: root
+  file:
+    path: /srv/shared-documents
+    state: directory
+    group: shared-documents
+    mode: "2770"
+
+- name: Set default ACL for shared-documents group
+  become: true
+  become_user: root
+  ansible.posix.acl:
+    path: /srv/shared-documents
+    entity: shared-documents
+    etype: group
+    permissions: rwx
+    default: true
+    state: present
+
+- name: Set ACL for shared-documents group on the directory itself
+  become: true
+  become_user: root
+  ansible.posix.acl:
+    path: /srv/shared-documents
+    entity: shared-documents
+    etype: group
+    permissions: rwx
+    state: present
+
+- name: Add each target user to shared-documents group
+  become: true
+  become_user: root
+  user:
+    name: "{{ item }}"
+    groups: shared-documents
+    append: true
+  loop: "{{ target_users }}"

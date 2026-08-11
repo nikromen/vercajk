@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import subprocess
-from collections.abc import Iterator
-from contextlib import contextmanager
 from pathlib import Path
 from stat import S_IRWXU
 from time import sleep
 from typing import TYPE_CHECKING
+
+import libvirt
 
 from vercajk.core.constants import ISO_MIME, QCOW2_MIME
 from vercajk.core.exceptions import VercajkImageException
@@ -20,20 +20,9 @@ from vercajk.core.utils import (
 )
 
 if TYPE_CHECKING:
-    import libvirt
     from libvirt import virDomain
 
-
-def _get_libvirt():
-    try:
-        import libvirt
-
-        return libvirt
-    except ImportError:
-        raise VercajkImageException(
-            "libvirt-python is not installed. Install with: "
-            "pip install libvirt-python (or poetry install --with vm)"
-        )
+_SNAPSHOT_NAME = "vercajk-snapshot"
 
 
 class Image:
@@ -58,26 +47,13 @@ class Image:
         self.graphics = graphics
         self.console = console
 
-        self._libvirt = _get_libvirt()
         self._connection: libvirt.virConnect | None = None
 
     @property
     def connection(self):
         if self._connection is None:
-            self._connection = self._libvirt.open("qemu:///system")
+            self._connection = libvirt.open("qemu:///system")
         return self._connection
-
-    def close(self) -> None:
-        if self._connection is not None:
-            self._connection.close()
-            self._connection = None
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
-        return False
 
     def _destroy_and_undefine_domain(self) -> None:
         domain = self._domain
@@ -96,9 +72,8 @@ class Image:
         if not domain.isActive():
             return None
 
-        _libvirt = _get_libvirt()
         interfaces = domain.interfaceAddresses(
-            _libvirt.VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE,
+            libvirt.VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE,
         )
         for iface_name, iface_data in interfaces.items():
             if iface_name == "lo":
@@ -112,7 +87,7 @@ class Image:
     def _domain(self) -> virDomain | None:
         try:
             return self.connection.lookupByName(self.virt_name)
-        except self._libvirt.libvirtError:
+        except libvirt.libvirtError:
             return None
 
     def _shutdown_domain_wait(self, max_attempts: int = 10) -> bool:
@@ -184,14 +159,7 @@ class Image:
                 f"VM '{self.virt_name}' did not shut down after installation"
             )
 
-    def fork_qcow2(self, dest: Path) -> Path:
-        """Fork an existing qcow2 image and boot a new VM from it."""
-        if not self._check_file(iso=False):
-            raise VercajkImageException(f"Not a qcow2 file: {self.path}")
-
-        dest_path = dest / f"{self.virt_name}.qcow2"
-        streaming_copy(self.path, dest_path)
-
+    def _import_disk_and_boot(self, dest_path: Path) -> Path:
         cmd = (
             ["sudo"]
             + self._base_virt_install_cmd
@@ -208,30 +176,44 @@ class Image:
 
         return dest_path
 
-    @contextmanager
-    def fork_qcow2_tmp(self) -> Iterator[tuple[virDomain, Path]]:
-        """Fork qcow2 into a temp dir, yield domain + path, clean up after."""
-        tmp_dest_path: Path | None = None
-        try:
-            with get_temporary_dir(S_IRWXU) as tmp_dir:
-                tmp_dest_path = self.fork_qcow2(tmp_dir)
-                domain = self._domain
-                if domain is None:
-                    raise VercajkImageException("Failed to find domain after fork")
-                yield domain, tmp_dest_path
-        finally:
-            self._destroy_and_undefine_domain()
-            if tmp_dest_path and tmp_dest_path.exists():
-                tmp_dest_path.unlink()
+    def fork_qcow2(self, dest: Path) -> Path:
+        """Fork an existing qcow2 image (full copy) and boot a new VM from it."""
+        if not self._check_file(iso=False):
+            raise VercajkImageException(f"Not a qcow2 file: {self.path}")
 
-    def destroy(self) -> None:
-        """Destroy and undefine the domain."""
-        self._destroy_and_undefine_domain()
+        dest_path = dest / f"{self.virt_name}.qcow2"
+        streaming_copy(self.path, dest_path)
+        return self._import_disk_and_boot(dest_path)
+
+    def create_overlay(self, dest: Path) -> Path:
+        """Boot a VM from a copy-on-write overlay of this qcow2 (backing file).
+
+        The base image is never touched - discard the (much smaller) overlay
+        file to instantly get back to a clean state.
+        """
+        if not self._check_file(iso=False):
+            raise VercajkImageException(f"Not a qcow2 file: {self.path}")
+
+        dest_path = dest / f"{self.virt_name}.qcow2"
+        subprocess.run(
+            [
+                "qemu-img",
+                "create",
+                "-f",
+                "qcow2",
+                "-b",
+                str(self.path),
+                "-F",
+                "qcow2",
+                str(dest_path),
+            ],
+            check=True,
+        )
+        return self._import_disk_and_boot(dest_path)
 
     @staticmethod
     def destroy_by_name(name: str) -> None:
         """Destroy and undefine a domain by name."""
-        libvirt = _get_libvirt()
         conn = libvirt.open("qemu:///system")
         try:
             domain = conn.lookupByName(name)
@@ -244,9 +226,53 @@ class Image:
             conn.close()
 
     @staticmethod
+    def create_snapshot(name: str) -> None:
+        """Create (or replace) a single named libvirt snapshot for quick revert.
+
+        Single-snapshot pattern, analogous to the host-level Btrfs snapshot in
+        core/btrfs.py: any previous vercajk snapshot for this VM is replaced.
+        """
+        # TODO: maybe could be exended with snapshots experimenting on
+        # multiple VMs/levels
+        conn = libvirt.open("qemu:///system")
+        try:
+            conn.lookupByName(name)
+        except libvirt.libvirtError as e:
+            conn.close()
+            raise VercajkImageException(f"VM '{name}' not found: {e}") from e
+        conn.close()
+
+        subprocess.run(
+            ["virsh", "snapshot-delete", name, _SNAPSHOT_NAME],
+            check=False,
+            capture_output=True,
+        )
+        result = subprocess.run(
+            ["virsh", "snapshot-create-as", name, _SNAPSHOT_NAME],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            raise VercajkImageException(
+                f"Failed to create snapshot for VM '{name}': {result.stderr.strip()}"
+            )
+
+    @staticmethod
+    def revert_to_snapshot(name: str) -> None:
+        """Revert a VM to its vercajk snapshot (created via create_snapshot)."""
+        result = subprocess.run(
+            ["virsh", "snapshot-revert", name, _SNAPSHOT_NAME],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            raise VercajkImageException(f"Failed to revert VM '{name}': {result.stderr.strip()}")
+
+    @staticmethod
     def list_domains() -> list[dict[str, str]]:
         """List all libvirt domains with their status."""
-        libvirt = _get_libvirt()
         conn = libvirt.open("qemu:///system")
         try:
             domains = []

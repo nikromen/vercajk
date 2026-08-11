@@ -1,5 +1,7 @@
 ---
 - name: Create folders in root of Documents
+  become: true
+  become_user: "{{ target_user }}"
   file:
     path: "{{ home_dir }}/Documents/{{ item }}"
     state: directory
@@ -8,6 +10,8 @@
     - "{{ docs_root_dirs }}"
 
 - name: Create directories for git forges
+  become: true
+  become_user: "{{ target_user }}"
   file:
     path: "{{ home_dir }}/Documents/git/{{ item }}"
     state: directory
@@ -16,6 +20,8 @@
     - "{{ git_forges }}"
 
 - name: Create rpm folder hierarchy inside Documents
+  become: true
+  become_user: "{{ target_user }}"
   file:
     path: "{{ home_dir }}/Documents/rpm/{{ item }}"
     state: directory
@@ -24,6 +30,8 @@
     - "{{ rpm_docs_dirs }}"
 
 - name: Create directories for compiling software from source
+  become: true
+  become_user: "{{ target_user }}"
   file:
     path: "{{ home_dir }}/Documents/src/{{ item }}"
     state: directory

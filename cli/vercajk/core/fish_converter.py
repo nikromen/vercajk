@@ -33,8 +33,7 @@ def convert_variables(bash_dir: Path, store_to: Path) -> None:
     output_dir = store_to / "variables"
     output_dir.mkdir(parents=True, exist_ok=True)
     with open(output_dir / "variables", "w") as fish_vars:
-        for line in lines_for_fish_variables:
-            fish_vars.write(line + "\n")
+        fish_vars.writelines(line + "\n" for line in lines_for_fish_variables)
 
 
 def convert_scripts(bash_dir: Path, store_to: Path) -> None:
@@ -47,6 +46,7 @@ def convert_scripts(bash_dir: Path, store_to: Path) -> None:
         ["bash", "-c", f". {scripts_file_path!s}; compgen -A function"],
         capture_output=True,
         text=True,
+        check=False,
     )
     if process.returncode != 0:
         raise FishConverterError(f"Failed to extract bash functions: {process.stderr}")

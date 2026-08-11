@@ -13,7 +13,9 @@ class TestConvertVariables:
 
         convert_variables(bash_dir, tmp_path)
 
-        output = tmp_path / "variables" / "variables.fish"
+        # No .fish extension: the dotfiles' config.fish sources this file by its
+        # exact name (see .config/fish/config.fish / .gitignore in the dotfiles repo).
+        output = tmp_path / "variables" / "variables"
         assert output.exists()
         content = output.read_text()
         assert "set -gx FOO bar" in content
@@ -34,7 +36,7 @@ class TestConvertVariables:
 
         convert_variables(bash_dir, tmp_path)
 
-        output = tmp_path / "variables" / "variables.fish"
+        output = tmp_path / "variables" / "variables"
         assert output.exists()
         assert output.read_text() == ""
 

@@ -1,7 +1,12 @@
 import click
 from click import Context, pass_context
 
-from vercajk.core.ansible import run_ansible_playbook, setup_ansible_cmd
+from vercajk.core.ansible import (
+    apply_config_defaults,
+    resolve_inventory,
+    run_ansible_playbook,
+    setup_ansible_cmd,
+)
 from vercajk.core.btrfs import maybe_create_snapshot
 
 
@@ -15,7 +20,8 @@ from vercajk.core.btrfs import maybe_create_snapshot
 def one_timers(ctx: Context, auto_snapshot: bool) -> None:
     """Run one-timers playbook for system-wide setup."""
     config = ctx.obj.config
+    apply_config_defaults(ctx.obj.ansible_ctx, config)
     maybe_create_snapshot(config.repo_path, ctx.obj.ansible_ctx.tags, auto_snapshot)
 
-    cmd = setup_ansible_cmd(ctx.obj.ansible_ctx)
+    cmd = setup_ansible_cmd(ctx.obj.ansible_ctx, inventory=resolve_inventory(config.repo_path))
     run_ansible_playbook(cmd, config.ansible_dir / "play_one_timers.yml")

@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import subprocess
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import click
@@ -45,6 +45,7 @@ def is_btrfs(mountpoint: str = "/") -> bool:
         ["findmnt", "-n", "-o", "FSTYPE", "--target", mountpoint],
         capture_output=True,
         text=True,
+        check=False,
     )
     return result.returncode == 0 and "btrfs" in result.stdout.strip()
 
@@ -56,6 +57,7 @@ def _get_git_commit(repo_path: Path) -> str:
         cwd=repo_path,
         capture_output=True,
         text=True,
+        check=False,
     )
     if result.returncode != 0:
         return "unknown"
@@ -117,7 +119,7 @@ def create_snapshot(repo_path: Path, tags: list[str] | None = None) -> SnapshotM
 
     meta = SnapshotMeta(
         commit=_get_git_commit(repo_path),
-        timestamp=datetime.now(timezone.utc).isoformat(),
+        timestamp=datetime.now(UTC).isoformat(),
         tags=tags or [],
     )
     meta_path = _ROOT_SNAPSHOTS_DIR / f"{_SNAPSHOT_NAME}.meta"
@@ -194,6 +196,7 @@ def revert_snapshot() -> str:
         ["btrfs", "subvolume", "get-default", "/"],
         capture_output=True,
         text=True,
+        check=False,
     )
     prev_id = "5"
     if prev_default.returncode == 0:

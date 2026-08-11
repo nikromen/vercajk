@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import sys
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from vercajk.core.config import Config
+if "libvirt" not in sys.modules:
+    sys.modules["libvirt"] = MagicMock()
+
+from vercajk.core.config import Config  # noqa: E402
 
 
 @pytest.fixture

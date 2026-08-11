@@ -53,4 +53,5 @@ def iso(ks: Path, base_iso: Path, output: Path) -> None:
 
     click.echo()
     click.echo(f"Custom ISO created: {output}")
-    click.echo("You can now write it to USB with: vercajk image usb --iso <path>")
+    click.echo("Write it to a USB drive manually, e.g.:")
+    click.echo(f"  sudo dd if={output} of=/dev/sdX bs=4M status=progress oflag=sync")

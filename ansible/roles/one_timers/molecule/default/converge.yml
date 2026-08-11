@@ -4,11 +4,12 @@
   become: true
 
   pre_tasks:
-    - name: Create test user
+    - name: Create test users
       user:
-        name: testuser
+        name: "{{ item }}"
         state: present
         create_home: true
+      loop: [testuser, testuser2]
 
     - name: Install required packages for testing
       package:
@@ -24,8 +25,7 @@
     - ../../../../group_vars/flatpak_apps
 
   vars:
-    target_user: testuser
-    home_dir: /home/testuser
+    target_users: [testuser, testuser2]
 
   roles:
     - role: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
